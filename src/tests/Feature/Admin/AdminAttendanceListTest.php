@@ -16,58 +16,89 @@ class AdminAttendanceListTest extends TestCase
     public function その日になされた全ユーザーの勤怠情報が正確に確認できる()
     {
         $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
 
-        Attendance::factory()->create([
-            'user_id' => $user->id,
-            'work_date' => Carbon::today(),
-        ]);
+        $users = User::factory()->count(2)->create();
 
-        $this->actingAs($admin);
+        $today = Carbon::today();
 
-        $response = $this->get('/admin/attendance');
+        foreach ($users as $user) {
+            Attendance::factory()->create([
+                'user_id'   => $user->id,
+                'work_date' => $today->toDateString(),
+                'clock_in'  => Carbon::createFromTime(9, 0),
+                'clock_out' => Carbon::createFromTime(18, 0),
+            ]);
+        }
 
-        $response->assertSee($user->name);
+        $response = $this->actingAs($admin)->get(
+            route('admin.attendanceList.show', [
+                'date' => $today->toDateString(),
+            ])
+        );
+
+        $response->assertStatus(200);
+
+        foreach ($users as $user) {
+            $response->assertSee($user->name);
+            $response->assertSee('09:00');
+            $response->assertSee('18:00');
+        }
     }
 
     /** @test */
     public function 遷移した際に現在の日付が表示される()
     {
         $admin = User::factory()->admin()->create();
-        $this->actingAs($admin);
+        $today = Carbon::today();
 
-        $response = $this->get('/admin/attendance');
+        $response = $this->actingAs($admin)->get(
+            route('admin.attendanceList.show')
+        );
 
-        $response->assertSee(Carbon::today()->format('Y-m-d'));
+        $response->assertStatus(200);
+
+        // 画面に表示されている形式で確認
+        $response->assertSee($today->format('Y年n月j日'));
+        $response->assertSee($today->format('Y/m/d'));
     }
 
     /** @test */
-    public function 前日を押下した時に前の日の勤怠情報が表示される()
+    public function 前日を指定した時に前の日の勤怠情報が表示される()
     {
         $admin = User::factory()->admin()->create();
-        $this->actingAs($admin);
-
         $yesterday = Carbon::yesterday();
 
         Attendance::factory()->create([
-            'work_date' => $yesterday,
+            'work_date' => $yesterday->toDateString(),
         ]);
 
-        $response = $this->get('/admin/attendance?date=' . $yesterday->format('Y-m-d'));
+        $response = $this->actingAs($admin)->get(
+            route('admin.attendanceList.show', [
+                'date' => $yesterday->toDateString(),
+            ])
+        );
 
-        $response->assertSee($yesterday->format('Y-m-d'));
+        $response->assertStatus(200);
+        $response->assertSee($yesterday->format('Y年n月j日'));
+        $response->assertSee($yesterday->format('Y/m/d'));
     }
 
     /** @test */
-    public function 翌日を押下した時に次の日の勤怠情報が表示される()
+    public function 翌日を指定した時に次の日の勤怠情報が表示される()
     {
         $admin = User::factory()->admin()->create();
-        $this->actingAs($admin);
-
         $tomorrow = Carbon::tomorrow();
 
-        $response = $this->get('/admin/attendance?date=' . $tomorrow->format('Y-m-d'));
+        $response = $this->actingAs($admin)->get(
+            route('admin.attendanceList.show', [
+                'date' => $tomorrow->toDateString(),
+            ])
+        );
 
-        $response->assertSee($tomorrow->format('Y-m-d'));
+        $response->assertStatus(200);
+
+        // Blade 表示に合わせる
+        $response->assertSee($tomorrow->format('Y年n月j日'));
+        $response->assertSee($tomorrow->format('Y/m/d'));
     }
 }

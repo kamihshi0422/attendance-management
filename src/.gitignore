@@ -20,5 +20,5 @@ yarn-error.log
 # Laravel
 /vendor/
 .env
-.env.testing
+src/.env.testing
 /node_modules/

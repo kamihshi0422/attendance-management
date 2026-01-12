@@ -96,7 +96,7 @@ Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('show.a
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // 日別勤怠一覧
-    Route::get('/admin/attendance/list/{year?}/{month?}', [AdminAttendanceController::class, 'showAdminAttendanceList'])
+    Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'showAdminAttendanceList'])
         ->name('admin.attendanceList.show');
 
     // 勤怠詳細
