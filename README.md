@@ -16,8 +16,8 @@ docker-compose exec php bash
 2. `composer install`
 
 > _composerインストールでエラーが発生した際は、phpコンテナ内で以下のコマンドを実行してから再度composerインストールを実行してください。
-> Laravelアプリが正常に動作するためのフォルダ作成と権限の変更になります。_
 
+> Laravelアプリが正常に動作するためのフォルダ作成と権限の変更になります。_
 ```bash
 mkdir -p bootstrap/cache storage/framework/cache/data
 mkdir -p storage/framework/views
@@ -68,42 +68,29 @@ php artisan migrate
 php artisan db:seed
 ```
 
-8. 出品画像、プロフィール画像のディレクトリ作成とサンプル画像の移動
-
-- `mkdir -p src/storage/app/public`
-- `mv img products_images src/storage/app/public`
-- `mkdir src/storage/app/public/user_images`
-
-> _Permission denied（権限のエラー）が出た際、以下を実行してください。_
+> _Permission denied（権限のエラー）が出た際、以下をsudoコマンドを実行してください。_
 
 ``` bash
 sudo chmod -R 777 src/*
 ```
 
-9.  画像ディレクトリを正常に作動させるため、phpコンテナ内で以下のコマンドを実行
+## メール認証
+mailtrapというツールを使用しています。<br>
+以下のリンクから会員登録をしてください。　<br>
+https://mailtrap.io/
 
-``` bash
-php artisan storage:link
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
-```
+SandboxesよりSandboxを作成し、<br>
+IntegrationsのSMTPからUsernameとPasswordコピー＆ペースト、<br>
+MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
 
-**Mailtrap 設定**
-1. https://stripe.com/jp にサインアップ
-2. ダッシュボードの「開発者」→「APIキー」から以下を取得
-  - 公開可能キー (STRIPE_KEY)
-  - シークレットキー (STRIPE_SECRET)
-3. 上記で取得したAPIキーを.env に設定
-
-``` text
-STRIPE_KEY=pk_test_XXXXXXXXXXXX
-STRIPE_SECRET=sk_test_XXXXXXXXXXXX
+```text
+MAIL_USERNAME=****Username
+MAIL_PASSWORD=****Password
 ```
 
 ## テスト用環境設定
-
 1. 「.env」ファイルを コピーして「.env.testing」と命名
-2.  .env.testingに以下の環境変数を追加
+2.  .env.testingに以下の環境変数を修正
 
 ```text
 APP_ENV=testing
@@ -111,12 +98,21 @@ APP_ENV=testing
 DB_DATABASE=attendance_test
 DB_USERNAME=root
 DB_PASSWORD=root
+
+MAIL_MAILER=array
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=no-reply@test.com
+MAIL_FROM_NAME="Attendance App"
 ```
 > _※DB_DATABASE=laravel_db のままだと本番DBが消えてしまいますのでご注意ください。_
 
 3. テスト用DBを作成（ターミナルで実行）
 ``` bash
-docker exec -it free-market-mysql-1 mysql -u root -proot -e \
+docker exec -it attendance-management-mysql-1 mysql -u root -proot\
 "CREATE DATABASE IF NOT EXISTS attendance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON attendance_test.* TO 'root'@'%';
 FLUSH PRIVILEGES;"
@@ -157,20 +153,20 @@ php artisan test tests/Feature --env=testing
 - 管理者ログイン画面 ：http://localhost/admin/login
 - phpMyAdmin:：http://localhost:8080/
 
-- MailHog ：http://localhost:8025/
+## テストアカウント
+name: 管理者ユーザー
+email: host@example.com
+password: password
+-------------------------
+name: 管理者ユーザー
+email: user@example.com
+password: password
+-------------------------
 
 ## 追加機能の説明
 **コーチの確認・許可のもと、機能を加えています**
-
-- メール認証画面で「認証はこちらから」ボタンを押下するとMailHog（http://localhost:8025/） に遷移し、認証するとプロフィール編集画面に遷移する。
-- 未承認ユーザーが認証が必要なアクションを行いログインした場合、元の画面に遷移する
-  - 例：商品詳細画面で「いいね」後ログイン → 商品詳細画面に戻る
-  - 例：マイページボタン → ログイン後マイページに遷移
-- 商品出品画面、プロフィール編集、送付先住所変更のエラーメッセージは要件定義にないため独自実装
-- 購入済商品の挙動：
-  - 詳細画面は表示可能
-  - 購入手続きボタンは非表示
-- 購入するボタンを押下時、トップページに戻り、Stipe画面に遷移を別タブで行うためにJavaScriptを使用しています
+- メール認証画面で「認証はこちらから」ボタンを押下するとmailtrapに遷移し、認証すると勤怠登録画面に遷移する。
+- 管理者も一般ユーザーとしてログイン、勤怠登録など可能
 
 ## 使用技術(実行環境)
 - PHP8.1 (php-fpm)
@@ -183,3 +179,81 @@ php artisan test tests/Feature --env=testing
 ![ER図](./ER.drawio.png)
 
 ## Tree
+.
+├── ER.drawio.png
+├── README.md
+├── docker
+│   ├── mysql
+│   │   ├── data
+│   │   └── my.cnf
+│   ├── nginx
+│   │   └── default.conf
+│   └── php
+│       ├── Dockerfile
+│       └── php.ini
+├── docker-compose.yml
+└── src
+    ├── README.md
+    ├── app
+    │   ├── Actions
+    │   ├── Console
+    │   ├── Exceptions
+    │   ├── Http
+    │   ├── Models
+    │   ├── Providers
+    │   └── Services
+    ├── artisan
+    ├── bootstrap
+    │   ├── app.php
+    │   └── cache
+    ├── composer.json
+    ├── composer.lock
+    ├── config
+    │   ├── app.php
+    │   ├── auth.php
+    │   ├── broadcasting.php
+    │   ├── cache.php
+    │   ├── cors.php
+    │   ├── database.php
+    │   ├── filesystems.php
+    │   ├── fortify.php
+    │   ├── hashing.php
+    │   ├── logging.php
+    │   ├── mail.php
+    │   ├── queue.php
+    │   ├── sanctum.php
+    │   ├── services.php
+    │   ├── session.php
+    │   └── view.php
+    ├── database
+    │   ├── factories
+    │   ├── migrations
+    │   └── seeders
+    ├── package.json
+    ├── phpunit.xml
+    ├── public
+    │   ├── css
+    │   ├── favicon.ico
+    │   ├── index.php
+    │   ├── robots.txt
+    │   └── storage -> /var/www/storage/app/public
+    ├── resources
+    │   ├── js
+    │   ├── lang
+    │   └── views
+    ├── routes
+    │   ├── api.php
+    │   ├── channels.php
+    │   ├── console.php
+    │   └── web.php
+    ├── server.php
+    ├── storage
+    │   ├── app
+    │   ├── framework
+    │   └── logs
+    ├── tests
+    │   ├── CreatesApplication.php
+    │   ├── Feature
+    │   ├── TestCase.php
+    │   └── Unit
+    └── webpack.mix.js

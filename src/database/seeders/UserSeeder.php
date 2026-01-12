@@ -11,19 +11,19 @@ class UserSeeder extends Seeder
     {
         // ログイン確認用の固定ユーザー
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password123'),
+            'name' => '管理者',
+            'email' => 'host@example.com',
+            'password' => bcrypt('password'),
             'role' => 'admin',
-            'email_verified_at' =>'ok',
+            'email_verified_at' => now(),
         ]);
 
         User::factory()->create([
-            'name' => 'Test',
-            'email' => 'test@test',
-            'password' => bcrypt('testtest'),
+            'name' => '一般ユーザー',
+            'email' => 'user@example.com',
+            'password' => bcrypt('password'),
             'role' => 'user',
-            'email_verified_at' =>'ok',
+            'email_verified_at' => now(),
         ]);
         // その他ランダムユーザー
         User::factory(5)->create();
