@@ -1,0 +1,78 @@
+.layout-header {
+    background: #000;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+}
+
+.layout-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1540px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.layout-header-logo img {
+    width: 370px;
+    height: 36px;
+}
+
+.layout-header-menu {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+/* ul li を横並びにする */
+.layout-header-menu-list {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    /* aタグ同様の間隔 */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    /* 幅が足りなければ折り返す */
+}
+
+.layout-header-menu-list li {
+    display: flex;
+    align-items: center;
+}
+
+/* aタグとボタンのスタイルはそのまま */
+.layout-header-menu-list a,
+.layout-header-menu-list button {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+}
+
+.layout-header-logout {
+    padding-left: 20px;
+}
+
+.layout-header-clock-out a {
+    font-weight: normal;
+}
+
+
+/* 矢印やカレンダーアイコン */
+.wrapper img {
+    width: 1%;
+}
+/* 翌日→に反転させる */

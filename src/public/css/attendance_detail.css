@@ -1,0 +1,198 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: #f0eff2;
+}
+
+main {
+    height: 100%;
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 90px 0;
+}
+
+.ttl-box {
+    width: 900px;
+}
+
+.ttl {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0 0 30px 0;
+    padding-left: 30px;
+}
+
+.ttl::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    width: 40px;
+    height: 0;
+    border: 6px solid #000;
+}
+
+.table-wrapper {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    width: 900px;
+    height: 555px;
+    border-collapse: collapse;
+}
+
+.span {
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+.table th,
+.table td {
+    height: 70px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    border-bottom: 2px solid #E1E1E1;
+    padding-left: 60px;
+    text-align: left;
+}
+
+.table tr:last-child th,
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table th {
+    color: #737373;
+}
+
+.table td {
+    color: #000;
+}
+
+fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-inline-size: 0;
+}
+
+.name, .yearPart, .datePart {
+    display: inline-block;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 20px;
+}
+
+.table td input {
+    width: 103px;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+}
+
+.table td textarea {
+    width: 316px;
+    height: 72px;
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    resize: none;
+    padding: 7px 10px;
+}
+
+/* 承認待ち（fieldset disabled）のとき */
+fieldset[disabled] input {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    resize: none;
+    pointer-events: none;
+}
+
+.readonly-reason {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    color: #000;
+    line-height: 70px;
+    /* td 高さに合わせて縦中央 */
+}
+
+.error-message {
+    color: red;
+    font-size: 10px;
+    margin: 0;
+}
+
+/* 標準の時計マーク消去 */
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-clear-button {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.btn-wrapper {
+    width: 900px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-wrapper button,
+.approved-text {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    color: #fff;
+    width: 130px;
+    height: 50px;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 50px;
+    margin-top: 40px;
+}
+.btn-wrapper button {
+    background-color: #000;
+}
+
+.approved-text {
+    background-color: #696969;
+}
+
+.pending-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: #FF000080;
+    letter-spacing: 0.15em;
+    display: flex;
+    justify-content: flex-end;
+}

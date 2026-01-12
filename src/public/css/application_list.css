@@ -1,0 +1,128 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: #f0eff2;
+}
+
+main {
+    height: 100%;
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 90px 0;
+}
+
+.ttl-box {
+    width: 900px;
+}
+
+.ttl {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0 0 30px 0;
+    padding-left: 20px;
+}
+
+.ttl::before {
+    content: "";
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    width: 40px;
+    height: 0;
+    border: 6px solid #000;
+}
+
+.nav-wrapper {
+    width: 900px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    border-bottom: 1px solid #000;
+    margin-bottom: 40px;
+    padding: 0 40px;
+}
+
+.nav-wrapper a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #000;
+}
+
+/* a.active 指定の仕方 大丈夫か確認 */
+.nav-wrapper a.active {
+    font-weight: bold;
+}
+
+.table-wrapper {
+    position: relative;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    width: 900px;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    font-size: 16px;
+    font-weight: bold;
+    color: #737373;
+    /* padding:10px 15px 10px 0; */
+    padding: 10px;
+    text-align: left;
+}
+
+.table th {
+    letter-spacing: 0.15em;
+    text-align: left;
+    border-bottom: 3px solid #E1E1E1;
+}
+
+.table th:first-child,
+.table td:first-child {
+    text-align: center;
+}
+
+.table th:last-child,
+.table td:last-child {
+    padding-right: 32px;
+}
+
+.table td {
+    border-bottom: 2px solid #E1E1E1;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.wide-text {
+    letter-spacing: 0.15em;
+}
+
+.date-text {
+    letter-spacing: 0;
+}
+
+.table td a {
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    color: #000;
+    text-decoration: none;
+}

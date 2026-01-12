@@ -1,0 +1,96 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+main {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0eff2;
+}
+
+.attendance-container {
+    width: 100%;
+    max-width: 1512px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.attendance-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.status {
+    width: 100px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    color: #696969;
+    background-color: #C8C8C8;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.current-date {
+    font-size: 40px;
+    color: #000;
+}
+
+.current-time {
+    font-size: 80px;
+    font-weight: bold;
+    margin-bottom: 70px;
+}
+
+.attendance-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 70px;
+}
+
+.btn {
+    width: 221px;
+    height: 77px;
+    border-radius: 20px;
+    border: none;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 0.15em;
+}
+
+.btn-clock-in ,.btn-clock-out {
+    color: #fff;
+    background-color: #000;
+}
+
+.btn-break-start,
+.btn-break-end {
+    color: #000;
+    background-color: #fff;
+}
+
+.attendance-message {
+    font-size: 26px;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 0.15em;
+}
+
+.attendance-message p {
+    margin: 0;
+}
