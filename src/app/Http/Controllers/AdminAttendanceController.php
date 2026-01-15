@@ -18,92 +18,92 @@ class AdminAttendanceController extends Controller
      * 管理者用：1日分の全ユーザー勤怠
      */
     //requestで$year = null を書かなくてもエラーにならない
-public function showAdminAttendanceList(
-    Request $request,
-    AttendanceTimeService $timeService
-) {
-        Carbon::setLocale('ja');
+    public function showAdminAttendanceList(
+        Request $request,
+        AttendanceTimeService $timeService
+    ) {
+            Carbon::setLocale('ja');
 
-        // 現在の日付（URLパラメータ or 今日）
-        $currentDate = $request->date
-            ? Carbon::parse($request->date) //URL に date パラメータがあればそれを日付として使用。
-            : Carbon::today(); //ない場合は 今日の日付
+            // 現在の日付（URLパラメータ or 今日）
+            $currentDate = $request->date
+                ? Carbon::parse($request->date) //URL に date パラメータがあればそれを日付として使用。
+                : Carbon::today(); //ない場合は 今日の日付
 
-        $previousDate = $currentDate->copy()->subDay(); //subDay() → 前日
-        $nextDate     = $currentDate->copy()->addDay(); //addDay() → 翌日
+            $previousDate = $currentDate->copy()->subDay(); //subDay() → 前日
+            $nextDate     = $currentDate->copy()->addDay(); //addDay() → 翌日
 
-        // その日の勤怠データ（ユーザー情報含む）
-        $attendanceRecords = Attendance::with('user', 'breakTimes')
-            ->where('work_date', $currentDate->toDateString()) //特定日の勤怠だけ取得
-            ->get();
+            // その日の勤怠データ（ユーザー情報含む）
+            $attendanceRecords = Attendance::with('user', 'breakTimes')
+                ->where('work_date', $currentDate->toDateString()) //特定日の勤怠だけ取得
+                ->get();
 
-        // 表示用配列（UI 用） 空の配列（Array）を作成
-        $attendanceListForOneDay = [];
+            // 表示用配列（UI 用） 空の配列（Array）を作成
+            $attendanceListForOneDay = [];
 
-            foreach ($attendanceRecords as $attendance) {
+                foreach ($attendanceRecords as $attendance) {
 
-        $times = $timeService->calculate($attendance);
+            $times = $timeService->calculate($attendance);
 
-        $attendanceListForOneDay[] = [
-            'user_name' => $attendance->user->name,
-            'clock_in'  => optional($attendance->clock_in)->format('H:i') ?? '',
-            'clock_out' => optional($attendance->clock_out)->format('H:i') ?? '',
-            'break_time' => $times['break_time'],
-            'total_work_time' => $times['work_time'],
-            'attendance_id' => $attendance->id,
-            'work_date' => $currentDate->toDateString(),
-        ];
-    }
+            $attendanceListForOneDay[] = [
+                'user_name' => $attendance->user->name,
+                'clock_in'  => optional($attendance->clock_in)->format('H:i') ?? '',
+                'clock_out' => optional($attendance->clock_out)->format('H:i') ?? '',
+                'break_time' => $times['break_time'],
+                'total_work_time' => $times['work_time'],
+                'attendance_id' => $attendance->id,
+                'work_date' => $currentDate->toDateString(),
+            ];
+        }
 
-        return view('admin_attendance_list', [
-            'attendanceListForOneDay' => $attendanceListForOneDay,
-            'currentDate' => $currentDate,
-            'previousDate' => $previousDate,
-            'nextDate' => $nextDate,
-        ]);
-    }
+            return view('admin_attendance_list', [
+                'attendanceListForOneDay' => $attendanceListForOneDay,
+                'currentDate' => $currentDate,
+                'previousDate' => $previousDate,
+                'nextDate' => $nextDate,
+            ]);
+        }
 
-public function showAdminDetail(
-    Request $request,
-    $id,
-    AttendanceDetailService $service
-) {
-    $workDate = Carbon::parse($request->date)->startOfDay();
+    public function showAdminDetail(
+        Request $request,
+        $id,
+        AttendanceDetailService $service
+    ) {
+        $workDate = Carbon::parse($request->date)->startOfDay();
 
-    if ($id == 0) {
-        $attendance = Attendance::firstOrCreate(
-            [
-                'user_id'   => (int) $request->user_id,
-                'work_date' => $workDate->toDateString(),
-            ],
-            [
-                'clock_in'  => null,
-                'clock_out' => null,
-            ]
+        if ($id == 0) {
+            $attendance = Attendance::firstOrCreate(
+                [
+                    'user_id'   => (int) $request->user_id,
+                    'work_date' => $workDate->toDateString(),
+                ],
+                [
+                    'clock_in'  => null,
+                    'clock_out' => null,
+                ]
+            );
+        }else {
+            // 既存勤怠P
+            $attendance = Attendance::with([
+                'breakTimes',
+                'user',
+                'application.applicationBreaks'
+            ])->findOrFail($id);
+        }
+
+        $data = $service->build(
+            $attendance,
+            $attendance->application,
+            $workDate,
+            'admin'
         );
-    }else {
-        // 既存勤怠
-        $attendance = Attendance::with([
-            'breakTimes',
-            'user',
-            'application.applicationBreaks'
-        ])->findOrFail($id);
+
+        $data['formAction'] = route(
+            'admin.submitCorrection',
+            $attendance->id
+        );
+
+        return view('attendance_detail', $data);
     }
-
-    $data = $service->build(
-        $attendance,
-        $attendance->application,
-        $workDate,
-        'admin'
-    );
-
-    $data['formAction'] = route(
-        'admin.submitCorrection',
-        $attendance->id
-    );
-
-    return view('attendance_detail', $data);
-}
 
     // 勤怠詳細から修正申請送信
     // 管理者用 勤怠修正（即時反映）
@@ -136,6 +136,7 @@ public function showAdminDetail(
                 'work_date' => $workDate->toDateString(),
                 'clock_in'  => $clockIn,
                 'clock_out' => $clockOut,
+                'reason'    => $request->reason,
             ]);
 
             // 既存休憩を削除（管理者は全上書き）

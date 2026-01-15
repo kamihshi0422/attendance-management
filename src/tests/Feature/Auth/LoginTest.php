@@ -19,7 +19,9 @@ class LoginTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors(['email']);
+        $response->assertSessionHasErrors([
+            'email' => 'メールアドレスを入力してください'
+        ]);
     }
 
     /** @test */
@@ -30,7 +32,9 @@ class LoginTest extends TestCase
             'password' => '',
         ]);
 
-        $response->assertSessionHasErrors(['password']);
+        $response->assertSessionHasErrors([
+            'password' => 'パスワードを入力してください'
+        ]);
     }
 
     /** @test */
@@ -46,6 +50,8 @@ class LoginTest extends TestCase
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHasErrors([
+            'login' => 'ログイン情報が登録されていません'
+        ]);
     }
 }

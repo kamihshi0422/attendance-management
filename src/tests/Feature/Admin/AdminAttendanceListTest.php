@@ -57,7 +57,6 @@ class AdminAttendanceListTest extends TestCase
 
         $response->assertStatus(200);
 
-        // 画面に表示されている形式で確認
         $response->assertSee($today->format('Y年n月j日'));
         $response->assertSee($today->format('Y/m/d'));
     }
@@ -97,7 +96,6 @@ class AdminAttendanceListTest extends TestCase
 
         $response->assertStatus(200);
 
-        // Blade 表示に合わせる
         $response->assertSee($tomorrow->format('Y年n月j日'));
         $response->assertSee($tomorrow->format('Y/m/d'));
     }

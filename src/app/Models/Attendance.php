@@ -10,7 +10,7 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'work_date', 'clock_in', 'clock_out', 'status',
+        'user_id', 'work_date', 'clock_in', 'clock_out', 'reason', 'status',
     ];
 
     // DBから取得した値を、自動で Carbon オブジェクトに変換するための設定

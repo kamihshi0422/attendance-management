@@ -13,7 +13,7 @@
     <header class="layout-header">
         <div class="layout-header-container">
             <div class="layout-header-logo">
-                <img src="{{ asset('storage/img/COACHTECHヘッダーロゴ.png') }}" alt="coachtechロゴ">
+                <img src="{{ asset('img/COACHTECHヘッダーロゴ.png') }}" alt="coachtechロゴ">
             </div>
 
             {{-- 「URLが /login でも /register でも /email/verify* でもない場合」 という条件 --}}

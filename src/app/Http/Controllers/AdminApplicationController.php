@@ -53,6 +53,10 @@ public function applicationApproval($applicationId)
             $attendance->clock_out = $application->corrected_clock_out;
         }
 
+        if ($application->reason !== null) {
+            $attendance->reason = $application->reason;
+        }
+
         $attendance->save();
 
         // ★ 休憩を反映

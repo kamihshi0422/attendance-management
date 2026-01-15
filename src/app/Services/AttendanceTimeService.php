@@ -53,7 +53,7 @@ class AttendanceTimeService
 
     private function formatMinutes(int $minutes): string
     {
-        if ($minutes <= 0) {
+        if ($minutes < 0) {
             return '';
         }
 

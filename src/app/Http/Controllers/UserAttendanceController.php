@@ -182,7 +182,6 @@ public function showAttendanceDetail(
 
     $data = $service->build(
         $attendance,
-        
         $attendance?->application,
         Carbon::parse($request->date),
         'user'

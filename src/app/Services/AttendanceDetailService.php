@@ -112,7 +112,9 @@ class AttendanceDetailService
             'pending'    => $pending,
             'isDisabled' => $isDisabled,
             'isApproved' => $isApproved, // ★ 追加
-            'reason'     => $application?->reason ?? '',
+            'reason' => $useApplication
+                        ? $application?->reason
+                        : ($attendance?->reason ?? ''),
         ];
     }
 }

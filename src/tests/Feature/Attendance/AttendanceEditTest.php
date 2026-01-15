@@ -100,12 +100,10 @@ class AttendanceEditTest extends TestCase
     /** @test */
     public function 修正申請処理が実行される()
     {
-        // 1. 勤怠情報を持つ一般ユーザーでログイン
         $user = User::factory()->create(['role' => 'user']);
         $attendance = Attendance::factory()->create(['user_id' => $user->id]);
         $this->actingAs($user);
 
-        // 2. 勤怠詳細を修正して申請
         $response = $this->post(route('attendance.submitCorrection', ['attendance' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
@@ -116,16 +114,13 @@ class AttendanceEditTest extends TestCase
 
         $application = Application::where('attendance_id', $attendance->id)->first();
 
-        // 3. 管理者でログイン
         $admin = User::factory()->create(['role' => 'admin']);
         $this->actingAs($admin);
 
-        // ✅ Application の id を渡す
         $response = $this->get(route('applicationApproval.show', ['attendance_correct_request_id' => $application->id]));
         $response->assertStatus(200);
         $response->assertSee('修正理由');
 
-        // 申請一覧画面
         $response = $this->get(route('applicationList.show', ['status' => 'pending']));
         $response->assertStatus(200);
         $response->assertSee((string)$application->id);
@@ -178,11 +173,9 @@ class AttendanceEditTest extends TestCase
             'status'        => '承認待ち',
         ]);
 
-        // 申請一覧画面を経由
         $responseList = $this->get(route('applicationList.show', ['status' => 'pending']));
         $responseList->assertStatus(200);
 
-        // 詳細ページに遷移
         $responseDetail = $this->get(route('attendanceDetail.show', $attendance->id));
         $responseDetail->assertStatus(200);
         $responseDetail->assertSee($attendance->work_date->format('Y-m-d'));

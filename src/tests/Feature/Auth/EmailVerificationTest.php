@@ -20,17 +20,15 @@ class EmailVerificationTest extends TestCase
     {
         Notification::fake();
 
-        // ユーザー作成
         $user = User::factory()->unverified()->create();
 
-        // Registeredイベントを発火（登録直後のメール送信）
         event(new Registered($user));
 
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     /** @test */
-    public function メール認証導線画面にアクセスできる()
+    public function メール認証導線画面のボタン押下で認証サイトに遷移する()
     {
         $user = User::factory()->unverified()->create();
 
@@ -39,7 +37,19 @@ class EmailVerificationTest extends TestCase
         $response = $this->get(route('verification.notice'));
 
         $response->assertStatus(200);
-        $response->assertSee('認証はこちらから'); // 導線ボタン表示確認
+        $response->assertSee('認証はこちらから');
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $verifyResponse = $this->get($verificationUrl);
+
+        $verifyResponse->assertRedirect('/attendance');
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
     }
 
     /** @test */
@@ -49,7 +59,6 @@ class EmailVerificationTest extends TestCase
 
         $this->actingAs($user);
 
-        // 署名付きURLを生成
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             Carbon::now()->addMinutes(60),
@@ -59,8 +68,9 @@ class EmailVerificationTest extends TestCase
         $response = $this->get($verificationUrl);
 
         $response->assertRedirect('/attendance');
+        $attendancePage = $this->get('/attendance');
+        $attendancePage->assertStatus(200);
 
-        // 認証済みになっていることを確認
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
 }

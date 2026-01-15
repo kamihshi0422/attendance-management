@@ -85,7 +85,7 @@ main {
 .sub-month::before {
     width: 20px;
     height: 15px;
-    background-image: url("/storage/img/088deff71873c09816bca59dd0d7efa7308e8fba.png");
+    background-image: url("/img/088deff71873c09816bca59dd0d7efa7308e8fba.png");
     opacity: 0.3;
     margin-right: 6px;
 }
@@ -99,14 +99,14 @@ main {
 .current-date::before {
     width: 25px;
     height: 25px;
-    background-image: url("/storage/img/50f4850c610ecd6f85b7ef666143260b91151a78.png");
+    background-image: url("/img/50f4850c610ecd6f85b7ef666143260b91151a78.png");
     margin-right: 6px;
 }
 
 .add-month::after {
     width: 20px;
     height: 15px;
-    background-image: url("/storage/img/088deff71873c09816bca59dd0d7efa7308e8fba.png");
+    background-image: url("/img/088deff71873c09816bca59dd0d7efa7308e8fba.png");
     opacity: 0.3;
     transform: rotate(180deg);
     margin-left: 6px;

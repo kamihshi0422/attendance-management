@@ -20,11 +20,9 @@ class AttendanceDetailTest extends TestCase
     {
         parent::setUp();
 
-        // ユーザー作成
         $this->user = User::factory()->create(['name' => 'テスト太郎']);
         $this->actingAs($this->user);
 
-        // 勤怠作成
         $this->attendance = Attendance::factory()->create([
             'user_id' => $this->user->id,
             'work_date' => Carbon::today(),
@@ -32,7 +30,6 @@ class AttendanceDetailTest extends TestCase
             'clock_out' => Carbon::today()->setTime(18, 0),
         ]);
 
-        // 休憩作成
         BreakTime::factory()->create([
             'attendance_id' => $this->attendance->id,
             'break_start' => Carbon::today()->setTime(12, 0),
@@ -55,8 +52,8 @@ class AttendanceDetailTest extends TestCase
         $response = $this->get("/attendance/list/detail/{$this->attendance->id}");
 
         $response->assertStatus(200);
-        $response->assertSee($this->attendance->work_date->format('Y年')); // 年だけ
-        $response->assertSee($this->attendance->work_date->format('n月j日')); // 月日
+        $response->assertSee($this->attendance->work_date->format('Y年'));
+        $response->assertSee($this->attendance->work_date->format('n月j日'));
     }
 
     /** @test */

@@ -16,7 +16,6 @@ docker-compose exec php bash
 2. `composer install`
 
 > _composerインストールでエラーが発生した際は、phpコンテナ内で以下のコマンドを実行してから再度composerインストールを実行してください。
-
 > Laravelアプリが正常に動作するためのフォルダ作成と権限の変更になります。_
 ```bash
 mkdir -p bootstrap/cache storage/framework/cache/data
@@ -31,6 +30,7 @@ chmod -R 775 storage bootstrap/cache
 4.  .envに以下の環境変数を追加
 
 ``` text
+DB_DATABASE=laravel_db
 DB_USERNAME=laravel_user
 DB_PASSWORD=laravel_pass
 ```
@@ -72,7 +72,6 @@ php artisan db:seed
 
 ``` bash
 sudo chmod -R 777 src/*
-```
 
 ## メール認証
 mailtrapというツールを使用しています。<br>
@@ -88,17 +87,34 @@ MAIL_USERNAME=****Username
 MAIL_PASSWORD=****Password
 ```
 
+## URL
+- ログイン画面 ：http://localhost/login
+- 会員登録画面 :http://localhost/register
+- 管理者ログイン画面 ：http://localhost/admin/login
+- phpMyAdmin:：http://localhost:8080/
+
+## テストアカウント
+name: 管理者ユーザー
+email: host@example.com
+password: password
+-------------------------
+name: 一般ユーザー
+email: user@example.com
+password: password
+-------------------------
 ## テスト用環境設定
 1. 「.env」ファイルを コピーして「.env.testing」と命名
 2.  .env.testingに以下の環境変数を修正
 
 ```text
 APP_ENV=testing
-
+```
+```text
 DB_DATABASE=attendance_test
 DB_USERNAME=root
 DB_PASSWORD=root
-
+```
+```text
 MAIL_MAILER=array
 MAIL_HOST=smtp.mailtrap.io
 MAIL_PORT=2525
@@ -110,22 +126,26 @@ MAIL_FROM_NAME="Attendance App"
 ```
 > _※DB_DATABASE=laravel_db のままだと本番DBが消えてしまいますのでご注意ください。_
 
-3. テスト用DBを作成（ターミナルで実行）
+3. テスト用DBを作成（mysqlコンテナ内で実行）
 ``` bash
-docker exec -it attendance-management-mysql-1 mysql -u root -proot\
-"CREATE DATABASE IF NOT EXISTS attendance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+docker exec -it attendance-management-mysql-1 mysql -u root -p root
+```
+``` bash
+CREATE DATABASE IF NOT EXISTS attendance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON attendance_test.* TO 'root'@'%';
-FLUSH PRIVILEGES;"
+FLUSH PRIVILEGES;
 ```
 
-4. .env.testingの設定反映（ターミナルで実行）
+4. .env.testingの設定反映（phpコンテナで実行）
 ```bash
-docker-compose exec php bash -c "
-php artisan config:clear &&
-php artisan cache:clear &&
-php artisan route:clear &&
-php artisan view:clear &&
-composer dump-autoload &&
+docker-compose exec php bash
+```
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+composer dump-autoload
 php artisan package:discover"
 ```
 
@@ -147,22 +167,6 @@ php artisan db:seed --env=testing
 php artisan test tests/Feature --env=testing
 ```
 
-## URL
-- ログイン画面 ：http://localhost/login
-- 会員登録画面 :http://localhost/register
-- 管理者ログイン画面 ：http://localhost/admin/login
-- phpMyAdmin:：http://localhost:8080/
-
-## テストアカウント
-name: 管理者ユーザー
-email: host@example.com
-password: password
--------------------------
-name: 管理者ユーザー
-email: user@example.com
-password: password
--------------------------
-
 ## 追加機能の説明
 **コーチの確認・許可のもと、機能を加えています**
 - メール認証画面で「認証はこちらから」ボタンを押下するとmailtrapに遷移し、認証すると勤怠登録画面に遷移する。
@@ -179,6 +183,7 @@ password: password
 ![ER図](./ER.drawio.png)
 
 ## Tree
+```text
 .
 ├── ER.drawio.png
 ├── README.md

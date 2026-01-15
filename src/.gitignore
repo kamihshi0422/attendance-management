@@ -14,9 +14,6 @@ yarn-error.log
 /.idea
 /.vscode
 
-# Docker MySQL data
-/docker/mysql/data/
-
 # Laravel
 /vendor/
 .env

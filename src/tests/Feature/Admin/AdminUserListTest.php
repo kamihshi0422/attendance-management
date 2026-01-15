@@ -12,101 +12,137 @@ class AdminUserListTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+ /** @test */
     public function 管理者ユーザーが全一般ユーザーの氏名とメールアドレスを確認できる()
     {
-        $admin = User::factory()->admin()->create();
-
-        User::factory()->create([
-            'name'  => '一般太郎',
-            'email' => 'user@test.com',
+        $admin = User::factory()->create([
+            'role' => 'admin',
         ]);
 
-        $this->actingAs($admin);
+        $users = User::factory()->count(3)->create([
+            'role' => 'user',
+        ]);
 
-        $response = $this->get('/admin/users');
+        $response = $this->actingAs($admin)
+            ->get(route('staffList.show'));
 
         $response->assertStatus(200);
-        $response->assertSee('一般太郎');
-        $response->assertSee('user@test.com');
+
+        foreach ($users as $user) {
+            $response->assertSee($user->name);
+            $response->assertSee($user->email);
+        }
     }
 
     /** @test */
     public function ユーザーの勤怠情報が正しく表示される()
     {
-        $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
-
-        Attendance::factory()->create([
-            'user_id'   => $user->id,
-            'work_date' => Carbon::today(),
-            'clock_in'  => '09:00',
-            'clock_out' => '18:00',
+        $admin = User::factory()->create([
+            'role' => 'admin',
         ]);
 
-        $this->actingAs($admin);
+        $staff = User::factory()->create([
+            'role' => 'user',
+        ]);
 
-        $response = $this->get("/admin/attendance/{$user->id}");
+        Attendance::factory()->create([
+            'user_id'   => $staff->id,
+            'work_date' => Carbon::now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('staffAttendance.show', $staff->id));
 
         $response->assertStatus(200);
-        $response->assertSee('09:00');
-        $response->assertSee('18:00');
+        $response->assertSee($staff->name);
+        $response->assertSee(Carbon::now()->format('m/d'));
     }
 
     /** @test */
     public function 前月を押下した時に表示月の前月の情報が表示される()
     {
-        $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
-
-        Attendance::factory()->create([
-            'user_id'   => $user->id,
-            'work_date' => Carbon::now()->subMonth()->startOfMonth(),
+        $admin = User::factory()->create([
+            'role' => 'admin',
         ]);
 
-        $this->actingAs($admin);
+        $staff = User::factory()->create([
+            'role' => 'user',
+        ]);
 
-        $response = $this->get("/admin/attendance/{$user->id}?month=" . Carbon::now()->subMonth()->format('Y-m'));
+        $lastMonth = Carbon::now()->subMonth();
+
+        Attendance::factory()->create([
+            'user_id'   => $staff->id,
+            'work_date' => $lastMonth->copy()->startOfMonth()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(
+            route('staffAttendance.show', [
+                'id'    => $staff->id,
+                'year'  => $lastMonth->year,
+                'month' => $lastMonth->month,
+            ])
+        );
 
         $response->assertStatus(200);
-        $response->assertSee(Carbon::now()->subMonth()->format('Y年m月'));
+
+        $response->assertSee($lastMonth->format('Y/m'));
     }
 
     /** @test */
     public function 翌月を押下した時に表示月の翌月の情報が表示される()
     {
-        $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
-
-        Attendance::factory()->create([
-            'user_id'   => $user->id,
-            'work_date' => Carbon::now()->addMonth()->startOfMonth(),
+        $admin = User::factory()->create([
+            'role' => 'admin',
         ]);
 
-        $this->actingAs($admin);
+        $staff = User::factory()->create([
+            'role' => 'user',
+        ]);
 
-        $response = $this->get("/admin/attendance/{$user->id}?month=" . Carbon::now()->addMonth()->format('Y-m'));
+        $nextMonth = Carbon::now()->addMonth();
+
+        Attendance::factory()->create([
+            'user_id'   => $staff->id,
+            'work_date' => $nextMonth->copy()->startOfMonth()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(
+            route('staffAttendance.show', [
+                'id'    => $staff->id,
+                'year'  => $nextMonth->year,
+                'month' => $nextMonth->month,
+            ])
+        );
 
         $response->assertStatus(200);
-        $response->assertSee(Carbon::now()->addMonth()->format('Y年m月'));
+        $response->assertSee($nextMonth->format('Y/m'));
     }
 
     /** @test */
     public function 詳細を押下するとその日の勤怠詳細画面に遷移する()
     {
-        $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
-
-        $attendance = Attendance::factory()->create([
-            'user_id'   => $user->id,
-            'work_date' => Carbon::today(),
+        $admin = User::factory()->create([
+            'role' => 'admin',
         ]);
 
-        $this->actingAs($admin);
+        $staff = User::factory()->create([
+            'role' => 'user',
+        ]);
 
-        $response = $this->get("/admin/attendance/detail/{$attendance->work_date}");
+        $attendance = Attendance::factory()->create([
+            'user_id'   => $staff->id,
+            'work_date' => '2025-12-01',
+        ]);
+
+        $response = $this->actingAs($admin)->get(
+            '/admin/attendance/' . $attendance->id
+            . '?date=' . $attendance->work_date
+            . '&user_id=' . $staff->id
+        );
 
         $response->assertStatus(200);
-        $response->assertSee($attendance->work_date->format('Y-m-d'));
+        $response->assertSee('2025-12-01');
+        $response->assertSee($staff->name);
     }
 }

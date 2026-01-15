@@ -23,7 +23,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors(['name']);
+        $response->assertSessionHasErrors([
+            'name' => 'お名前を入力してください',
+        ]);
     }
 
     /** @test */
@@ -36,7 +38,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors(['email']);
+        $response->assertSessionHasErrors([
+            'email' => 'メールアドレスを入力してください',
+        ]);
     }
 
     /** @test */
@@ -49,7 +53,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'pass',
         ]);
 
-        $response->assertSessionHasErrors(['password']);
+        $response->assertSessionHasErrors([
+            'password' => 'パスワードは8文字以上で入力してください',
+        ]);
     }
 
     /** @test */
@@ -62,7 +68,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password456',
         ]);
 
-        $response->assertSessionHasErrors(['password']);
+        $response->assertSessionHasErrors([
+            'password' => 'パスワードと一致しません',
+        ]);
     }
 
     /** @test */
@@ -75,13 +83,14 @@ class RegisterTest extends TestCase
             'password_confirmation' => '',
         ]);
 
-        $response->assertSessionHasErrors(['password']);
+        $response->assertSessionHasErrors([
+            'password' => 'パスワードを入力してください',
+        ]);
     }
 
     /** @test */
     public function フォームに内容が入力されていた場合、データが正常に保存される()
     {
-        // メール送信を無効化
         Mail::fake();
         Event::fake([Registered::class]);
 
@@ -92,6 +101,11 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+        ]);
+
+        $response->assertRedirect('/email/verify');
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
         ]);
