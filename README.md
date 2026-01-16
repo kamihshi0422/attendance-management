@@ -15,9 +15,13 @@ docker-compose exec php bash
 
 2. `composer install`
 
-> _composerインストールでエラーが発生した際は、phpコンテナ内で以下のコマンドを実行してから再度composerインストールを実行してください。
+### composer install 実行時にエラーが発生する場合
 
-> Laravelアプリが正常に動作するためのフォルダ作成と権限の変更になります。_
+環境によっては、`composer install` 実行時やアプリ起動時に
+ディレクトリの権限エラーが発生する場合があります。
+
+その場合は、phpコンテナ内で以下の対応を行ってください。
+
 ```bash
 mkdir -p bootstrap/cache storage/framework/cache/data
 mkdir -p storage/framework/views
@@ -77,7 +81,7 @@ mailtrapというツールを使用しています。<br>
 https://mailtrap.io/
 
 SandboxesよりSandboxを作成し、<br>
-IntegrationsのSMTPからUsernameとPasswordをコピー＆ペーストして、<br>
+IntegrationsのSMTPよりUsernameとPasswordをコピーして下記該当部分にペースト、<br>
 MAIL_FROM_ADDRESSに任意のメールアドレスを入力してください。
 
 ```text
@@ -100,9 +104,10 @@ name: 一般ユーザー
 email: user@example.com
 password: password
 -------------------------
+
 ## テスト用環境設定
 1. 「.env」ファイルを コピーして「.env.testing」と命名
-2.  .env.testingに以下の環境変数を修正
+2.  .env.testingの以下の環境変数を修正
 
 ```text
 APP_ENV=testing
@@ -129,7 +134,7 @@ MAIL_FROM_NAME="Attendance App"
 ``` bash
 docker exec -it attendance-management-mysql-1 mysql -u root -proot
 ```
-- mysqlコンテナ内で下記を一括コピー&ペースト
+- mysqlコンテナ内で下記をまとめて実行
 ``` bash
 CREATE DATABASE IF NOT EXISTS attendance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON attendance_test.* TO 'root'@'%';
@@ -141,14 +146,14 @@ FLUSH PRIVILEGES;
 ```bash
 docker-compose exec php bash
 ```
-- phpコンテナ内で下記を一括コピー&ペースト
+- phpコンテナ内で下記をまとめて実行
 ```bash
 php artisan config:clear
 php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 composer dump-autoload
-php artisan package:discover"
+php artisan package:discover
 ```
 
 5. テスト専用マイグレーション
