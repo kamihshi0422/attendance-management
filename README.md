@@ -16,6 +16,7 @@ docker-compose exec php bash
 2. `composer install`
 
 > _composerインストールでエラーが発生した際は、phpコンテナ内で以下のコマンドを実行してから再度composerインストールを実行してください。
+
 > Laravelアプリが正常に動作するためのフォルダ作成と権限の変更になります。_
 ```bash
 mkdir -p bootstrap/cache storage/framework/cache/data
@@ -36,10 +37,6 @@ DB_PASSWORD=laravel_pass
 ```
 
 > _.env を変更した際、反映されないことがあるため、phpコンテナ内でまとめて以下を実行してください。_
-
-``` bash
-docker-compose exec php bash
-```
 ```bash
 php artisan config:clear
 php artisan cache:clear
@@ -72,6 +69,7 @@ php artisan db:seed
 
 ``` bash
 sudo chmod -R 777 src/*
+```
 
 ## メール認証
 mailtrapというツールを使用しています。<br>
@@ -79,8 +77,8 @@ mailtrapというツールを使用しています。<br>
 https://mailtrap.io/
 
 SandboxesよりSandboxを作成し、<br>
-IntegrationsのSMTPからUsernameとPasswordコピー＆ペースト、<br>
-MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
+IntegrationsのSMTPからUsernameとPasswordをコピー＆ペーストして、<br>
+MAIL_FROM_ADDRESSに任意のメールアドレスを入力してください。
 
 ```text
 MAIL_USERNAME=****Username
@@ -126,20 +124,24 @@ MAIL_FROM_NAME="Attendance App"
 ```
 > _※DB_DATABASE=laravel_db のままだと本番DBが消えてしまいますのでご注意ください。_
 
-3. テスト用DBを作成（mysqlコンテナ内で実行）
+3. テスト用DBを作成
+- mysqlコンテナ内へ入る
 ``` bash
-docker exec -it attendance-management-mysql-1 mysql -u root -p root
+docker exec -it attendance-management-mysql-1 mysql -u root -proot
 ```
+- mysqlコンテナ内で下記を一括コピー&ペースト
 ``` bash
 CREATE DATABASE IF NOT EXISTS attendance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON attendance_test.* TO 'root'@'%';
 FLUSH PRIVILEGES;
 ```
 
-4. .env.testingの設定反映（phpコンテナで実行）
+4. .env.testingの設定反映
+- phpコンテナ内へ入る
 ```bash
 docker-compose exec php bash
 ```
+- phpコンテナ内で下記を一括コピー&ペースト
 ```bash
 php artisan config:clear
 php artisan cache:clear
@@ -170,7 +172,7 @@ php artisan test tests/Feature --env=testing
 ## 追加機能の説明
 **コーチの確認・許可のもと、機能を加えています**
 - メール認証画面で「認証はこちらから」ボタンを押下するとmailtrapに遷移し、認証すると勤怠登録画面に遷移する。
-- 管理者も一般ユーザーとしてログイン、勤怠登録など可能
+- 管理者も一般ユーザーログイン可能。一般ユーザー機能（勤怠登録など）利用可能。
 
 ## 使用技術(実行環境)
 - PHP8.1 (php-fpm)
