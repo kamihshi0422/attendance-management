@@ -1,4 +1,4 @@
-#coachtech 勤怠管理アプリ
+# coachtech 勤怠管理アプリ
 
 ## 環境構築
 **Dockerビルド**
@@ -19,8 +19,7 @@ docker-compose exec php bash
 
 ### composer install 実行時にエラーが発生する場合
 
-環境によっては、`composer install` 実行時やアプリ起動時に
-ディレクトリの権限エラーが発生する場合があります。
+環境によっては、`composer install` 実行時やアプリ起動時にディレクトリの権限エラーが発生する場合があります。
 
 その場合は、phpコンテナ内で以下の対応を行ってください。
 
@@ -107,6 +106,7 @@ MAIL_FROM_ADDRESS=email@example.com
 ### name: 一般ユーザー
 - email: user@example.com
 - password: password
+-------------------------
 
 ## テスト用環境設定
 1. 「.env」ファイルを コピーして「.env.testing」と命名
