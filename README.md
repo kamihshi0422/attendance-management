@@ -195,8 +195,8 @@ php artisan test tests/Feature --env=testing
 ## テーブル仕様書
 
 ## 1. users テーブル
-| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
-|-----|----------|----|--------|----------|----------|----------|
+| No. | カラム名 | 型 | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|-----|----------|----|-------------|------------|----------|-------------|
 | 1 | id | unsigned bigint | ○ |  | ○ |  |
 | 2 | name | string |  |  | ○ |  |
 | 3 | email | string |  | ○ | ○ |  |
@@ -208,8 +208,8 @@ php artisan test tests/Feature --env=testing
 | 9 | updated_at | timestamp |  |  |  |  |
 
 ## 2. attendances テーブル
-| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
-|-----|----------|----|--------|----------|----------|----------|
+| No. | カラム名 | 型 | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|-----|----------|----|-------------|------------|----------|-------------|
 | 1 | id | unsigned bigint | ○ |  | ○ |  |
 | 2 | user_id | unsigned bigint |  |  | ○ | users(id) |
 | 3 | work_date | date |  |  | ○ |  |
@@ -221,8 +221,8 @@ php artisan test tests/Feature --env=testing
 | 9 | updated_at | timestamp |  |  |  |  |
 
 ## 3. break_times テーブル
-| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
-|-----|----------|----|--------|----------|----------|----------|
+| No. | カラム名 | 型 | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|-----|----------|----|-------------|------------|----------|-------------|
 | 1 | id | unsigned bigint | ○ |  | ○ |  |
 | 2 | attendance_id | unsigned bigint |  |  | ○ | attendances(id) |
 | 3 | break_start | datetime |  |  |  |  |
@@ -231,8 +231,8 @@ php artisan test tests/Feature --env=testing
 | 6 | updated_at | timestamp |  |  |  |  |
 
 ## 4. applications テーブル
-| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
-|-----|----------|----|--------|----------|----------|----------|
+| No. | カラム名 | 型 | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|-----|----------|----|-------------|------------|----------|-------------|
 | 1 | id | unsigned bigint | ○ |  | ○ |  |
 | 2 | user_id | unsigned bigint |  |  | ○ | users(id) |
 | 3 | attendance_id | unsigned bigint |  |  | ○ | attendances(id) |
@@ -244,8 +244,8 @@ php artisan test tests/Feature --env=testing
 | 9 | updated_at | timestamp |  |  |  |  |
 
 ## 5. application_breaks テーブル
-| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
-|-----|----------|----|--------|----------|----------|----------|
+| No. | カラム名 | 型 | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|-----|----------|----|-------------|------------|----------|-------------|
 | 1 | id | unsigned bigint | ○ |  | ○ |  |
 | 2 | application_id | unsigned bigint |  |  | ○ | applications(id) |
 | 3 | break_start | datetime |  |  |  |  |
