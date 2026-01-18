@@ -90,6 +90,7 @@ MAIL_FROM_ADDRESSに任意のメールアドレスを入力してください。
 ```text
 MAIL_USERNAME=****Username
 MAIL_PASSWORD=****Password
+MAIL_FROM_ADDRESS=email@example.com
 ```
 
 ## URL
@@ -99,14 +100,13 @@ MAIL_PASSWORD=****Password
 - phpMyAdmin:：http://localhost:8080/
 
 ## テストアカウント
-name: 管理者ユーザー
-email: host@example.com
-password: password
--------------------------
-name: 一般ユーザー
-email: user@example.com
-password: password
--------------------------
+- name: 管理者ユーザー
+- email: host@example.com
+- password: password
+
+- name: 一般ユーザー
+- email: user@example.com
+- password: password
 
 ## テスト用環境設定
 1. 「.env」ファイルを コピーして「.env.testing」と命名
