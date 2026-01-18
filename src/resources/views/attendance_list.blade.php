@@ -45,7 +45,7 @@
                     <td>
                         <a href="{{ route('attendanceDetail.show', [
                             'id' => $day['record_id'] ?? 0,
-                            'date' => $day['raw_date']  // → コントローラで日付を渡す
+                            'date' => $day['raw_date']
                         ]) }}">
                             詳細
                         </a>

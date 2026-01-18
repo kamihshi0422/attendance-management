@@ -163,36 +163,36 @@ class UserAttendanceController extends Controller
     ) {
         $attendance = null;
         $application = null;
-        $workDate = Carbon::parse($request->date);
 
         if ($id) {
             $attendance = Attendance::with(
                 'breakTimes',
                 'user',
                 'application.applicationBreaks'
-            )->find($id);
+            )->findOrFail($id);
 
-            $application = $attendance?->application;
+            $application = $attendance->application;
+            $workDate = Carbon::parse($attendance->work_date);
+
         } else {
-            $application = Application::where('user_id', auth()->id())
+            $application = Application::with('attendance')
+                ->where('user_id', auth()->id())
                 ->where('status', '承認待ち')
-                ->whereHas('attendance', function ($query) use ($workDate) {
-                    $query->whereDate('work_date', $workDate);
-                })
-                ->first();
+                ->firstOrFail();
+
+            $attendance = $application->attendance;
+            $workDate = Carbon::parse($attendance->work_date);
         }
 
         $attendanceDetailData = $detailViewService->build(
             $attendance,
             $application,
-            Carbon::parse($request->date),
+            $workDate,
             'user'
         );
 
         if ($attendance) {
             $formAction = route('attendance.submitCorrection', $attendance->id);
-        } elseif ($application) {
-            $formAction = route('attendance.submitCorrection', $application->id);
         } else {
             $formAction = route('attendance.createForDate');
         }

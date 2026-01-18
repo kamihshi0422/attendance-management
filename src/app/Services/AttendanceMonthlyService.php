@@ -28,26 +28,21 @@ class AttendanceMonthlyService
 
             $attendance = $attendances->get($dateKey);
 
-            $recordId = null;
-            $clockIn  = '';
-            $clockOut = '';
-            $breakTime    = '';
-            $total    = '';
+            $recordId  = null;
+            $clockIn   = '';
+            $clockOut  = '';
+            $breakTime = '';
+            $total     = '';
 
             if ($attendance) {
-                if (
-                    $attendance->application &&
-                    $attendance->application->status === '承認待ち'
-                ) {
-                } else {
-                    $recordId = $attendance->id;
-                    $clockIn  = $attendance->clock_in?->format('H:i') ?? '';
-                    $clockOut = $attendance->clock_out?->format('H:i') ?? '';
+                $recordId = $attendance->id;
 
-                    $times = $timeService->calculate($attendance);
-                    $breakTime = $times['break_time'];
-                    $total     = $times['work_time'];
-                }
+                $clockIn  = $attendance->clock_in?->format('H:i') ?? '';
+                $clockOut = $attendance->clock_out?->format('H:i') ?? '';
+
+                $times = $timeService->calculate($attendance);
+                $breakTime = $times['break_time'];
+                $total     = $times['work_time'];
             }
 
             $days[] = [

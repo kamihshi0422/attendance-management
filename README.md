@@ -82,8 +82,8 @@ mailtrapというツールを使用しています。<br>
 以下のリンクから会員登録をしてください。　<br>
 https://mailtrap.io/
 
-SandboxesよりSandboxを作成し、<br>
-IntegrationsのSMTPよりUsernameとPasswordをコピーして下記該当部分にペースト、<br>
+Email SandboxよりStart Testingを押下し、<br>
+IntegrationsのSMTPよりUsernameとPasswordをコピーして下記該当部分にペーストし、<br>
 MAIL_FROM_ADDRESSに任意のメールアドレスを入力してください。
 
 ```text
