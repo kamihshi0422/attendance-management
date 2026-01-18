@@ -100,11 +100,11 @@ MAIL_FROM_ADDRESS=email@example.com
 - phpMyAdmin:：http://localhost:8080/
 
 ## テストアカウント
-- name: 管理者ユーザー
+### name: 管理者ユーザー
 - email: host@example.com
 - password: password
-
-- name: 一般ユーザー
+-------------------------
+### name: 一般ユーザー
 - email: user@example.com
 - password: password
 
