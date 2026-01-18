@@ -5,15 +5,14 @@
 @endsection
 
 @section('content')
-<div class="attendance-container">
+<section class="attendance-container">
 
-    <div class="attendance-info">
+    <nav class="attendance-info">
         <div class="status">{{ $status }}</div>
         <div class="current-date">{{ $currentDate }}</div>
         <div class="current-time">{{ $currentTime }}</div>
-    </div>
+    </nav>
 
-    {{-- 出勤前 --}}
     @if ($status === '勤務外')
         <div class="attendance-actions">
             <form action="{{ route('attendance.clockIn') }}" method="POST" class="attendance-form">
@@ -23,7 +22,6 @@
         </div>
     @endif
 
-    {{-- 出勤中 --}}
     @if ($status === '出勤中')
         <div class="attendance-actions">
             {{-- 退勤ボタン --}}
@@ -40,7 +38,6 @@
         </div>
     @endif
 
-    {{-- 休憩中 --}}
     @if ($status === '休憩中')
         <div class="attendance-actions">
             <form action="{{ route('attendance.break.end') }}" method="POST" class="attendance-form">
@@ -50,12 +47,11 @@
         </div>
     @endif
 
-    {{-- 退勤済 --}}
     @if ($status === '退勤済')
         <div class="attendance-message">
             <p>お疲れ様でした。</p>
         </div>
     @endif
 
-</div>
+</section>
 @endsection

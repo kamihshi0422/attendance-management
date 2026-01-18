@@ -5,22 +5,23 @@
 @endsection
 
 @section('content')
+<section class="wrapper">
 
-<div class="wrapper">
-    <div class="ttl-box">
-        <h1 class="ttl">{{ $currentDate->format('Y年n月j日') }}の勤怠</h1>
-    </div>
-    <div class="nav-wrapper">
-        <a class="sub-month" href="{{ route('admin.attendanceList.show', ['date' => $previousDate->toDateString()]) }}">
+    <header class="ttl-box">
+        <h1 class="ttl">{{ $current_date->format('Y年n月j日') }}の勤怠</h1>
+    </header>
+
+    <nav class="nav-wrapper">
+        <a class="sub-month" href="{{ route('admin.attendanceList.show', ['date' => $previous_date->toDateString()]) }}">
             前日
         </a>
 
-        <div class="current-date">{{ $currentDate->format('Y/m/d') }}</div>
+        <div class="current-date">{{ $current_date->format('Y/m/d') }}</div>
 
-        <a class="add-month" href="{{ route('admin.attendanceList.show', ['date' => $nextDate->toDateString()]) }}">
+        <a class="add-month" href="{{ route('admin.attendanceList.show', ['date' => $next_date->toDateString()]) }}">
             翌日
         </a>
-    </div>
+    </nav>
 
     <section class="table-wrapper">
         <table class="table">
@@ -33,7 +34,7 @@
             <th>詳細</th>
         </tr>
 
-        @foreach ($attendanceListForOneDay as $row)
+        @foreach ($daily_attendance_list as $row)
             <tr>
                 <td>{{ $row['user_name'] }}</td>
                 <td>{{ $row['clock_in'] }}</td>
@@ -52,5 +53,6 @@
         @endforeach
         </table>
     </section>
-</div>
+
+</section>
 @endsection

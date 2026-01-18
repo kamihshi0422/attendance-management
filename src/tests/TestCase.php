@@ -13,7 +13,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        Mail::fake(); // ここで全メールを無効化
+        Mail::fake();
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
     }
 }

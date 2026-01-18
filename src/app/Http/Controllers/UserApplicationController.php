@@ -10,13 +10,11 @@ use App\Models\Application;
 
 class UserApplicationController extends Controller
 {
-    // 勤怠詳細から修正申請送信
     public function submitCorrection(ApplicationRequest $request, $attendanceId)
     {
         $attendance = Attendance::with('application.applicationBreaks')
             ->findOrFail($attendanceId);
 
-        // 最新申請（未承認でも承認済みでも上書き可能）
         $application = $attendance->application ?? new Application(['attendance_id' => $attendance->id]);
         $application->user_id = auth()->id();
 
@@ -27,40 +25,35 @@ class UserApplicationController extends Controller
         $clockOut = Carbon::createFromFormat('H:i', $request->clock_out)
             ->setDate($workDate->year, $workDate->month, $workDate->day);
 
-        // 日跨ぎ処理を削除 → clockOut < clockIn の場合はバリデーションで弾かれる
-
         $application->corrected_clock_in  = $clockIn;
         $application->corrected_clock_out = $clockOut;
         $application->reason              = $request->reason;
         $application->status              = '承認待ち';
         $application->save();
 
-        // 休憩は既存の未承認申請分を削除して再作成
         $application->applicationBreaks()->delete();
 
-        // 休憩登録（日跨ぎ対応なし）
-        foreach ($request->break_start ?? [] as $key => $startInput) {
-            $endInput = $request->break_end[$key] ?? null;
+        foreach ($request->break_start ?? [] as $index => $startInput) {
+            $endInput = $request->break_end[$index] ?? null;
             if (!$startInput && !$endInput) continue;
 
-            $start = Carbon::createFromFormat('H:i', $startInput)
+            $breakStart = Carbon::createFromFormat('H:i', $startInput)
                 ->setDate($workDate->year, $workDate->month, $workDate->day);
 
-            $end = $endInput
+            $breakEnd = $endInput
                 ? Carbon::createFromFormat('H:i', $endInput)
                     ->setDate($workDate->year, $workDate->month, $workDate->day)
                 : null;
 
             $application->applicationBreaks()->create([
-                'break_start' => $start,
-                'break_end'   => $end,
+                'break_start' => $breakStart,
+                'break_end'   => $breakEnd,
             ]);
         }
 
         return redirect()->back();
     }
 
-    // 勤怠詳細から新規勤怠作成
     public function createForDate(ApplicationRequest $request)
     {
         $user = auth()->user();
@@ -73,7 +66,6 @@ class UserApplicationController extends Controller
             ]
         );
 
-        // application がなければ新規作成、あれば上書き
         $application = $attendance->application ?? new Application(['attendance_id' => $attendance->id]);
         $application->user_id = $user->id;
         $application->corrected_clock_in  = Carbon::parse($request->work_date.' '.$request->clock_in);
@@ -82,18 +74,17 @@ class UserApplicationController extends Controller
         $application->status = '承認待ち';
         $application->save();
 
-        // 休憩も上書き（日跨ぎ処理なし）
         $application->applicationBreaks()->delete();
-        foreach ($request->break_start ?? [] as $key => $startInput) {
-            $endInput = $request->break_end[$key] ?? null;
+        foreach ($request->break_start ?? [] as $index => $startInput) {
+            $endInput = $request->break_end[$index] ?? null;
             if (!$startInput && !$endInput) continue;
 
-            $start = Carbon::parse($request->work_date.' '.$startInput);
-            $end   = $endInput ? Carbon::parse($request->work_date.' '.$endInput) : null;
+            $breakStart = Carbon::parse($request->work_date.' '.$startInput);
+            $breakEnd   = $endInput ? Carbon::parse($request->work_date.' '.$endInput) : null;
 
             $application->applicationBreaks()->create([
-                'break_start' => $start,
-                'break_end'   => $end,
+                'break_start' => $breakStart,
+                'break_end'   => $breakEnd,
             ]);
         }
 
@@ -107,12 +98,10 @@ class UserApplicationController extends Controller
         $applicationQuery = Application::with(['user', 'attendance'])
             ->orderBy('created_at', 'asc');
 
-        // 一般ユーザーなら自分の分だけ
         if (auth()->user()->role === 'user') {
             $applicationQuery->where('user_id', auth()->id());
         }
 
-        // ステータス絞り込み
         if ($status === 'approved') {
             $applicationQuery->where('status', '承認済み');
         } else {
@@ -120,7 +109,7 @@ class UserApplicationController extends Controller
         }
 
         return view('application_list', [
-            'applicationList' => $applicationQuery->get(),
+            'application_list' => $applicationQuery->get(),
             'status' => $status,
         ]);
     }

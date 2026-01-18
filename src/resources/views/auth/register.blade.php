@@ -5,17 +5,21 @@
 @endsection
 
 @section('content')
-<div class="form-wrapper">
+<section class="form-wrapper">
+
     <form class="form" action="/register" method="post">
         @csrf
+
         <div class="form-content">
-            <div class="form-heading">
+            <header class="form-heading">
                 <h1 class="heading-title">会員登録</h1>
-            </div>
+            </header>
+
             <div class="form-group">
                 <div class="form-group-title">
                     <span class="form-label-item">名前</span>
                 </div>
+
                 <div class="form-group-content">
                     <div class="form-input-text">
                         <input type="text" name="name" value="{{ old('name') }}" />
@@ -27,14 +31,17 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <div class="form-group-title">
                     <span class="form-label-item">メールアドレス</span>
                 </div>
+
                 <div class="form-group-content">
                     <div class="form-input-text">
                         <input type="text" name="email" value="{{ old('email') }}" />
                     </div>
+
                     <div class="form-error">
                         @error('email')
                             {{ $message }}
@@ -42,14 +49,17 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <div class="form-group-title">
                     <span class="form-label-item">パスワード</span>
                 </div>
+
                 <div class="form-group-content">
                     <div class="form-input-text">
                         <input type="password" name="password" />
                     </div>
+
                     <div class="form-error">
                         @error('password')
                             {{ $message }}
@@ -57,10 +67,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <div class="form-group-title">
                     <span class="form-label-item">パスワード確認</span>
                 </div>
+
                 <div class="form-group-content">
                     <div class="form-input-text">
                         <input type="password" name="password_confirmation" />
@@ -74,8 +86,9 @@
         </div>
     </form>
 
-    <div class="login-link">
+    <nav class="login-link">
         <a class="login-button-submit" href="/login">ログインはこちら</a>
-    </div>
-</div>
+    </nav>
+
+</section>
 @endsection

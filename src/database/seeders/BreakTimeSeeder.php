@@ -14,8 +14,6 @@ class BreakTimeSeeder extends Seeder
         $attendances = Attendance::all();
 
         foreach ($attendances as $attendance) {
-
-            // 休憩は1回固定（12:00〜13:00）
             $start = Carbon::parse($attendance->clock_in)->addHours(3);
             $end   = $start->copy()->addHour();
 

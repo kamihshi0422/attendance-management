@@ -5,26 +5,29 @@
 @endsection
 
 @section('content')
-<div class="verify-wrapper">
-    <h2 class="verify-message">
+<section class="verify-wrapper">
+
+    <h1 class="verify-message">
         登録していただいたメールアドレスに認証メールを送付しました。<br>
         メール認証を完了してください。
-    </h2>
+    </h1>
 
     @if (session('message'))
         <p class="message">{{ session('message') }}</p>
     @endif
 
-    <div class="verify-actions">
+    <nav class="verify-actions">
         <a href="https://mailtrap.io/inboxes/4273732/messages"  class="verify-btn">
             認証はこちらから
         </a>
+
         <div class="retry-box">
             <form method="post" action="{{ route('verification.send') }}">
                 @csrf
                 <button type="submit" class="retry-btn">認証メールを再送する</button>
             </form>
         </div>
-    </div>
-</div>
+    </nav>
+
+</section>
 @endsection

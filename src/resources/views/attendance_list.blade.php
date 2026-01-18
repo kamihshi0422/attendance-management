@@ -5,11 +5,13 @@
 @endsection
 
 @section('content')
-<div class="wrapper">
-    <div class="ttl-box">
+<section class="wrapper">
+
+    <header class="ttl-box">
         <h1 class="ttl">勤怠一覧</h1>
-    </div>
-    <div class="nav-wrapper">
+    </header>
+
+    <nav class="nav-wrapper">
         <a class="sub-month" href="{{ route('attendanceList.show', ['year' => $previousMonth->year, 'month' => $previousMonth->month]) }}">
             前月
         </a>
@@ -19,7 +21,7 @@
         <a class="add-month" href="{{ route('attendanceList.show', ['year' => $nextMonth->year, 'month' => $nextMonth->month]) }}">
             翌月
         </a>
-    </div>
+    </nav>
 
     <section class="table-wrapper">
         <table class="table">
@@ -52,5 +54,6 @@
             @endforeach
         </table>
     </section>
-</div>
+
+</section>
 @endsection

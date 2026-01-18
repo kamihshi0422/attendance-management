@@ -19,19 +19,16 @@ class Application extends Model
         'corrected_clock_out' => 'datetime',
     ];
 
-    // 修正申請の提出者
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // 修正対象の勤怠（1勤怠1申請前提）
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);
     }
 
-     // ←★ 追加：application_breaks のリレーション
     public function applicationBreaks()
     {
         return $this->hasMany(ApplicationBreak::class);

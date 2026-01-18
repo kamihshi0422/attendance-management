@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Application;
 
-class AttendanceDetailService
+class AttendanceDetailViewService
 {
     public function build(
         ?Attendance $attendance,
@@ -14,48 +14,37 @@ class AttendanceDetailService
         Carbon $workDate,
         string $mode = 'user'
     ): array {
-
-        /*
-        |--------------------------------------------------------------------------
-        | application を勤怠値の上書きに使うかどうか
-        |--------------------------------------------------------------------------
-        | ・承認待ちのみ有効
-        | ・admin モードでは使わない
-        */
         $useApplication =
             $application
             && $application->status === '承認待ち'
             && $mode !== 'admin';
 
-        // ユーザー名
-        $user_name = $attendance?->user->name ?? auth()->user()->name;
+        $userName = $attendance?->user->name ?? auth()->user()->name;
 
-        // 日付
         $yearPart = $workDate->translatedFormat('Y年');
         $datePart = $workDate->translatedFormat('n月j日');
         $rawDate  = $workDate->toDateString();
 
-        // 出勤・退勤
-        $clock_in = '';
-        $clock_out = '';
+        $clockIn = '';
+        $clockOut = '';
 
         if ($useApplication) {
             if ($application->corrected_clock_in) {
-                $clock_in = Carbon::parse($application->corrected_clock_in)->format('H:i');
+                $clockIn= Carbon::parse($application->corrected_clock_in)->format('H:i');
             }
             if ($application->corrected_clock_out) {
-                $clock_out = Carbon::parse($application->corrected_clock_out)->format('H:i');
+                $clockOut = Carbon::parse($application->corrected_clock_out)->format('H:i');
             }
         }
 
-        if ($clock_in === '' && $attendance?->clock_in) {
-            $clock_in = Carbon::parse($attendance->clock_in)->format('H:i');
-        }
-        if ($clock_out === '' && $attendance?->clock_out) {
-            $clock_out = Carbon::parse($attendance->clock_out)->format('H:i');
+        if ($clockIn === '' && $attendance?->clock_in) {
+            $clockIn = Carbon::parse($attendance->clock_in)->format('H:i');
         }
 
-        // 休憩
+        if ($clockOut === '' && $attendance?->clock_out) {
+            $clockOut = Carbon::parse($attendance->clock_out)->format('H:i');
+        }
+
         $breaks = [];
 
         $sourceBreaks =
@@ -80,7 +69,6 @@ class AttendanceDetailService
             }
         }
 
-        // 状態判定
         $pending    = $application?->status === '承認待ち';
         $isApproved = $application?->status === '承認済み';
 
@@ -92,7 +80,6 @@ class AttendanceDetailService
             $breaks[] = ['id' => null, 'start' => '', 'end' => ''];
         }
 
-        // ⭐ 編集可能なときだけ +1 行
         if ($isDisabled === false) {
             $breaks[] = [
                 'id'    => null,
@@ -102,16 +89,16 @@ class AttendanceDetailService
         }
 
         return [
-            'user_name'  => $user_name,
+            'user_name'  => $userName,
             'yearPart'   => $yearPart,
             'datePart'   => $datePart,
             'rawDate'    => $rawDate,
-            'clock_in'   => $clock_in,
-            'clock_out'  => $clock_out,
+            'clock_in'   => $clockIn,
+            'clock_out'  => $clockOut,
             'breaks'     => $breaks,
             'pending'    => $pending,
             'isDisabled' => $isDisabled,
-            'isApproved' => $isApproved, // ★ 追加
+            'isApproved' => $isApproved,
             'reason' => $useApplication
                         ? $application?->reason
                         : ($attendance?->reason ?? ''),

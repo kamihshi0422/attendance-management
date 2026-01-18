@@ -39,13 +39,12 @@ class ApplicationRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+            $in = null;
+            $out = null;
 
             $clockIn  = $this->input('clock_in');
             $clockOut = $this->input('clock_out');
 
-            // -----------------------------
-            // 出勤・退勤の論理チェック
-            // -----------------------------
             if ($clockIn && $clockOut) {
                 try {
                     $in  = Carbon::createFromFormat('H:i', $clockIn);
@@ -56,26 +55,20 @@ class ApplicationRequest extends FormRequest
                 }
 
                 if ($out->lt($in)) {
-                    // 出勤 > 退勤の場合
                     $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
                 }
             }
 
-            // -----------------------------
-            // 休憩時間チェック
-            // -----------------------------
             $breakStarts = $this->input('break_start', []);
             $breakEnds   = $this->input('break_end', []);
 
             foreach ($breakStarts as $index => $start) {
                 $end = $breakEnds[$index] ?? null;
 
-                // 両方空ならスキップ
                 if (($start === null || $start === '') && ($end === null || $end === '')) {
                     continue;
                 }
 
-                // 片方だけ入力はNG
                 if (($start === null || $start === '') || ($end === null || $end === '')) {
                     $validator->errors()->add("break_start.$index", '休憩時間が不適切な値です');
                     continue;
@@ -89,20 +82,18 @@ class ApplicationRequest extends FormRequest
                     continue;
                 }
 
-                // 休憩開始は出勤 <= 開始 <= 退勤
                 if ($startTime->lt($in) || $startTime->gt($out)) {
                     $validator->errors()->add("break_start.$index", '休憩時間が不適切な値です');
                 }
 
-                // 休憩終了は開始 <= 終了 <= 退勤
                 if ($endTime->lt($startTime) || $endTime->gt($out)) {
                     $validator->errors()->add("break_end.$index", '休憩時間もしくは退勤時間が不適切な値です');
                 }
-            }
 
-            // -----------------------------
-            // 備考欄必須は rules でカバー済み
-            // -----------------------------
+                if (!$in || !$out) {
+                    return;
+                }
+            }
         });
     }
 }

@@ -9,7 +9,6 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // ログイン確認用の固定ユーザー
         User::factory()->create([
             'name' => '管理者',
             'email' => 'host@example.com',
@@ -25,7 +24,7 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'email_verified_at' => now(),
         ]);
-        // その他ランダムユーザー
+
         User::factory(5)->create();
     }
 }

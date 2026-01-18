@@ -13,18 +13,13 @@ return new class extends Migration
     {
         Schema::create('application_breaks', function (Blueprint $table) {
             $table->id();
-
-            // applications.id に紐づく休憩
             $table->unsignedBigInteger('application_id');
             $table->foreign('application_id')
                 ->references('id')
                 ->on('applications')
                 ->onDelete('cascade');
-
-            // 修正後の休憩時間
             $table->dateTime('break_start')->nullable();
             $table->dateTime('break_end')->nullable();
-
             $table->timestamps();
         });
     }

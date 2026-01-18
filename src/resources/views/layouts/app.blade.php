@@ -9,16 +9,16 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @yield('css')
 </head>
-<body>
-    <header class="layout-header">
-        <div class="layout-header-container">
-            <div class="layout-header-logo">
-                <img src="{{ asset('img/COACHTECHヘッダーロゴ.png') }}" alt="coachtechロゴ">
-            </div>
 
-            {{-- 「URLが /login でも /register でも /email/verify* でもない場合」 という条件 --}}
-            @if (!Request::is('login') && !Request::is('register') && !Request::is('email/verify*'))
-                <nav class="layout-header-menu">
+<body>
+<header class="layout-header">
+    <div class="layout-header-container">
+        <div class="layout-header-logo">
+            <img src="{{ asset('img/COACHTECHヘッダーロゴ.png') }}" alt="coachtechロゴ">
+        </div>
+
+        @if (!Request::is('login') && !Request::is('register') && !Request::is('email/verify*'))
+            <nav class="layout-header-menu">
                 @auth
                     <ul class="layout-header-menu-list">
                         @if (Auth::user()->role === 'admin')
@@ -54,12 +54,12 @@
                     </ul>
                 @endauth
             </nav>
-            @endif
-        </div>
-    </header>
+        @endif
+    </div>
+</header>
 
-    <main>
-        @yield('content')
-    </main>
+<main>
+    @yield('content')
+</main>
 </body>
 </html>

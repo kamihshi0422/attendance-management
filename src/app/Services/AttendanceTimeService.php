@@ -38,14 +38,13 @@ class AttendanceTimeService
 
     private function calculateBreakMinutes(Attendance $attendance): int
     {
-        return $attendance->breakTimes->sum(function ($break) {
-
-            if (!$break->break_end) {
+        return $attendance->breakTimes->sum(function ($breakTime) {
+            if (!$breakTime->break_end) {
                 return 0;
             }
 
-            $start = Carbon::parse($break->break_start);
-            $end   = Carbon::parse($break->break_end);
+            $start = Carbon::parse($breakTime->break_start);
+            $end   = Carbon::parse($breakTime->break_end);
 
             return $start->diffInMinutes($end);
         });

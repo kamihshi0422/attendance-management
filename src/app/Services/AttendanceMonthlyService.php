@@ -13,7 +13,6 @@ class AttendanceMonthlyService
         Carbon $month,
         AttendanceTimeService $timeService
     ): array {
-        // 当月の勤怠取得
         $attendances = Attendance::where('user_id', $user->id)
             ->whereYear('work_date', $month->year)
             ->whereMonth('work_date', $month->month)
@@ -24,7 +23,6 @@ class AttendanceMonthlyService
         $days = [];
 
         for ($day = 1; $day <= $month->daysInMonth; $day++) {
-
             $date = Carbon::create($month->year, $month->month, $day);
             $dateKey = $date->toDateString();
 
@@ -32,7 +30,7 @@ class AttendanceMonthlyService
 
             $clockIn  = '';
             $clockOut = '';
-            $break    = '';
+            $breakTime    = '';
             $total    = '';
             $recordId = null;
 
@@ -42,9 +40,8 @@ class AttendanceMonthlyService
                 $clockIn  = $attendance->clock_in?->format('H:i') ?? '';
                 $clockOut = $attendance->clock_out?->format('H:i') ?? '';
 
-                // ⭐ 時間計算は Service に完全委譲
                 $times = $timeService->calculate($attendance);
-                $break = $times['break_time'];
+                $breakTime = $times['break_time'];
                 $total = $times['work_time'];
             }
 
@@ -54,7 +51,7 @@ class AttendanceMonthlyService
                 'record_id' => $recordId,
                 'clock_in'  => $clockIn,
                 'clock_out' => $clockOut,
-                'break'     => $break,
+                'break'     => $breakTime,
                 'total'     => $total,
             ];
         }

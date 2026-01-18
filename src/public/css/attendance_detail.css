@@ -127,7 +127,6 @@ fieldset {
     padding: 7px 10px;
 }
 
-/* 承認待ち（fieldset disabled）のとき */
 fieldset[disabled] input {
     border: none;
     background: transparent;
@@ -144,7 +143,6 @@ fieldset[disabled] input {
     letter-spacing: 0.15em;
     color: #000;
     line-height: 70px;
-    /* td 高さに合わせて縦中央 */
 }
 
 .error-message {
@@ -153,7 +151,6 @@ fieldset[disabled] input {
     margin: 0;
 }
 
-/* 標準の時計マーク消去 */
 input[type="time"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-inner-spin-button,
 input[type="time"]::-webkit-clear-button {

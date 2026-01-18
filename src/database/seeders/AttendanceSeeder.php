@@ -11,16 +11,12 @@ class AttendanceSeeder extends Seeder
 {
     public function run()
     {
-                // 全ユーザーを取得
         $users = User::all();
 
-        // ユーザーごとに勤怠データを作成
         foreach ($users as $user) {
-
-            $daysAgoList = [1, 2, 3, 4, 5]; // 前日〜5日前
+            $daysAgoList = [1, 2, 3, 4, 5];
 
             foreach ($daysAgoList as $daysAgo) {
-
                 $date = Carbon::today()->subDays($daysAgo);
 
                 $clockIn  = $date->copy()->setTime(9, 0);

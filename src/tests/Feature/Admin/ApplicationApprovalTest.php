@@ -18,7 +18,6 @@ class ApplicationApprovalTest extends TestCase
         $admin = User::factory()->admin()->create();
         $this->actingAs($admin);
 
-        // 他ユーザーの承認待ち申請
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
@@ -34,7 +33,6 @@ class ApplicationApprovalTest extends TestCase
             'reason'  => '申請B',
         ]);
 
-        // 承認済み（表示されてはいけない）
         Application::factory()->create([
             'status' => '承認済み',
             'reason' => '承認済み申請',
@@ -44,11 +42,9 @@ class ApplicationApprovalTest extends TestCase
 
         $response->assertStatus(200);
 
-        // 承認待ちは全件表示される
         $response->assertSee('申請A');
         $response->assertSee('申請B');
 
-        // 承認済みは表示されない
         $response->assertDontSee('承認済み申請');
     }
 
@@ -61,7 +57,6 @@ class ApplicationApprovalTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
-        // 承認済み（表示される）
         Application::factory()->create([
             'user_id' => $user1->id,
             'status'  => '承認済み',
@@ -74,7 +69,6 @@ class ApplicationApprovalTest extends TestCase
             'reason'  => '承認済み申請B',
         ]);
 
-        // 承認待ち（表示されない）
         Application::factory()->create([
             'status' => '承認待ち',
             'reason' => '未承認申請',
@@ -84,11 +78,9 @@ class ApplicationApprovalTest extends TestCase
 
         $response->assertStatus(200);
 
-        // 承認済みは全件表示
         $response->assertSee('承認済み申請A');
         $response->assertSee('承認済み申請B');
 
-        // 承認待ちは表示されない
         $response->assertDontSee('未承認申請');
     }
 

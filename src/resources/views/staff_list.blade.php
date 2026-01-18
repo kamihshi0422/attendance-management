@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/staff_attendance.css') }}">
+<link rel="stylesheet" href="{{ asset('css/staff_list.css') }}">
 @endsection
 
 @section('content')
-<div class="wrapper">
-    <div class="ttl-box">
+<section class="wrapper">
+
+    <header class="ttl-box">
         <h1 class="ttl">スタッフ一覧</h1>
-    </div>
+    </header>
 
     <section class="table-wrapper">
         <table class="table">
@@ -18,7 +19,7 @@
                 <th>月次勤怠</th>
             </tr>
 
-            @foreach ($staffs as $staff)
+            @foreach ($staffList as $staff)
                 <tr>
                     <td>{{ $staff->name }}</td>
                     <td>{{ $staff->email }}</td>
@@ -31,5 +32,6 @@
             @endforeach
         </table>
     </section>
-</div>
+
+</section>
 @endsection

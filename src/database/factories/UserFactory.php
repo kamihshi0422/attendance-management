@@ -23,7 +23,6 @@ class UserFactory extends Factory
         ];
     }
 
-    /** 管理者ユーザー */
     public function admin()
     {
         return $this->state(function () {
@@ -33,7 +32,6 @@ class UserFactory extends Factory
         });
     }
 
-    /** メール未認証 */
     public function unverified()
     {
         return $this->state(function () {

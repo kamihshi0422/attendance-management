@@ -5,11 +5,13 @@
 @endsection
 
 @section('content')
-<div class="wrapper">
-    <div class="ttl-box">
+<section class="wrapper">
+
+    <header class="ttl-box">
         <h1 class="ttl">申請一覧</h1>
-    </div>
-    <div class="nav-wrapper">
+    </header>
+
+    <nav class="nav-wrapper">
         <a href="{{ route('applicationList.show', ['status' => 'pending']) }}"
         class="{{ request('status', 'pending') === 'pending' ? 'active' : '' }}">
             承認待ち
@@ -19,7 +21,7 @@
         class="{{ request('status') === 'approved' ? 'active' : '' }}">
             承認済み
         </a>
-    </div>
+    </nav>
 
     <section class="table-wrapper">
         <table class="table">
@@ -32,24 +34,21 @@
                 <th>詳細</th>
             </tr>
 
-            @foreach ($applicationList as $applicationItem)
+            @foreach ($application_list as $applicationItem)
                 <tr>
                     <td class="wide-text">{{ $applicationItem->status }}</td>
                     <td class="wide-text">{{ $applicationItem->user->name }}</td>
-                    <!-- 打刻日を出勤データから出力 、parse() は 文字列を Carbon の日付オブジェクトに変換-->
                     <td class="date-text">{{ \Carbon\Carbon::parse($applicationItem->corrected_clock_in)->format('Y/m/d') }}</td>
                     <td class="wide-text">{{ $applicationItem->reason }}</td>
                     <td class="date-text">{{ $applicationItem->created_at->format('Y/m/d') }}</td>
                     <td class="wide-text">
                         @if(auth()->user()->role === 'admin')
-                            {{-- 管理者：承認画面へ --}}
                             <a href="{{ route('applicationApproval.show', [
                                 'attendance_correct_request_id' => $applicationItem->id
                             ]) }}">
                                 詳細
                             </a>
                         @else
-                            {{-- 一般ユーザー：勤怠詳細へ --}}
                             <a href="{{ route('attendanceDetail.show', [
                                 'id'   => $applicationItem->attendance_id,
                                 'date' => $applicationItem->attendance->work_date
@@ -62,5 +61,6 @@
             @endforeach
         </table>
     </section>
-</div>
+
+</section>
 @endsection

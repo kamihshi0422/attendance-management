@@ -24,7 +24,6 @@ class AdminAttendanceDetailTest extends TestCase
             'work_date' => Carbon::today()->toDateString(),
         ]);
 
-        // ★ ルートとdateクエリを実装に合わせる
         $response = $this->get(
             "/admin/attendance/{$attendance->id}?date={$attendance->work_date}"
         );
@@ -106,12 +105,12 @@ class AdminAttendanceDetailTest extends TestCase
             }
 
             /** @test */
-            public function 備考欄が未入力の場合のエラーメッセージが表示される()
-            {
-                $admin = User::factory()->admin()->create();
-                $this->actingAs($admin);
+    public function 備考欄が未入力の場合のエラーメッセージが表示される()
+    {
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin);
 
-                $attendance = Attendance::factory()->create();
+        $attendance = Attendance::factory()->create();
 
         $response = $this->post(
             route('admin.submitCorrection', $attendance->id),

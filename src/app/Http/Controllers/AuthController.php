@@ -20,7 +20,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $validatedData = $request->validated();// rules()で許可した項目だけ抽出され
+        $validatedData = $request->validated();
 
         $user = User::create([
             'name' => $validatedData['name'],
@@ -28,28 +28,24 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        // ここでメール認証メールを送信
         event(new Registered($user));
 
-        Auth::login($user);// $userのidをセッションに保存　強制ログイン
+        Auth::login($user);
 
         return redirect()->route('verification.notice');
     }
 
-    // 認証案内画面
     public function verificationNotice()
     {
         return view('auth.verification_email');
     }
 
-    // メールリンクで認証
     public function verifyEmail(EmailVerificationRequest $request)
     {
-        $request->fulfill(); // 認証完了
-        return redirect()->route('attendance.show'); // 認証後の遷移先
+        $request->fulfill();
+        return redirect()->route('attendance.show');
     }
 
-    // 認証メール再送
     public function resendVerification(Request $request)
     {
         $request->user()->sendEmailVerificationNotification();
@@ -65,11 +61,11 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
-        if (Auth::attempt($validatedData)) {//emailとpass(hashcheck使用)が一致でtrue
-            $request->session()->regenerate();//セッションIDを新しくすることで、ログイン前に使っていたセッションID悪用を防ぐ。
-            $user = Auth::user();//今回は使っていないが、後で使うために書かれているケースが多い。
+        if (Auth::attempt($validatedData)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
 
-            return redirect()->intended('/attendance');//intendedログイン前にアクセスしようとしていたページ→なければ指定先へ遷移
+            return redirect()->intended('/attendance');
         }
 
         return back()->withErrors(['login' => 'ログイン情報が登録されていません'])->onlyInput('email');
@@ -77,10 +73,10 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();//← ログイン情報を削除（認証解除）
+        Auth::logout();
 
-        $request->session()->invalidate();// ← セッションIDを無効化（破棄） 古いセッションIDを無効化
-        $request->session()->regenerateToken();//← CSRF対策トークンを再発行 偽フォーム・不正POSTを防ぐ
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/login');
     }
@@ -94,23 +90,19 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
-        // attemptで email & password が正しいかチェック
         if (Auth::attempt($validatedData)) {
 
             $request->session()->regenerate();
 
-            // ログインしたユーザーを取得
             $user = Auth::user();
 
-            // role が admin でなければログアウトして弾く
-            if ($user->role !== 'admin') { //!== 左右の値が 値も型も 違う場合に true を返す
+            if ($user->role !== 'admin') {
                 Auth::logout();
                 return back()->withErrors([
-                    'login' => '管理者権限がありません' //要件にはないが
+                    'login' => 'ログイン情報が登録されていません'
                 ])->onlyInput('email');
             }
 
-            // OK → 管理者ページへ
             return redirect()->route('admin.attendanceList.show');
         }
 
@@ -118,5 +110,4 @@ class AuthController extends Controller
             'login' => 'ログイン情報が登録されていません'
         ])->onlyInput('email');
     }
-
 }

@@ -19,7 +19,7 @@ class ApplicationFactory extends Factory
             'corrected_clock_in'  => now()->setTime(10, 0),
             'corrected_clock_out' => now()->setTime(19, 0),
             'reason'        => '修正理由',
-            'status'        => '修正前', // ★ default
+            'status'        => '修正前',
         ];
     }
 

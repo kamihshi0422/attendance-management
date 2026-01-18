@@ -1,3 +1,5 @@
+#coachtech 勤怠管理アプリ
+
 ## 環境構築
 **Dockerビルド**
 
@@ -32,12 +34,19 @@ chmod -R 775 storage bootstrap/cache
 ```
 
 3. 「.env.example」ファイルを コピーして「.env」と命名
+
 4.  .envに以下の環境変数を追加
 
 ``` text
 DB_DATABASE=laravel_db
 DB_USERNAME=laravel_user
 DB_PASSWORD=laravel_pass
+```
+
+5. アプリケーションキーの作成
+
+``` bash
+php artisan key:generate
 ```
 
 > _.env を変更した際、反映されないことがあるため、phpコンテナ内でまとめて以下を実行してください。_
@@ -49,12 +58,6 @@ php artisan view:clear
 composer dump-autoload
 php artisan package:discover
 php artisan config:cache
-```
-
-5. アプリケーションキーの作成
-
-``` bash
-php artisan key:generate
 ```
 
 6. マイグレーションの実行
@@ -69,7 +72,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-> _Permission denied（権限のエラー）が出た際、以下をsudoコマンドを実行してください。_
+> _Permission denied（権限のエラー）が出た際、以下sudoコマンドをターミナルで実行してください。_
 
 ``` bash
 sudo chmod -R 777 src/*
@@ -188,6 +191,67 @@ php artisan test tests/Feature --env=testing
 
 ## ER 図
 ![ER図](./ER.drawio.png)
+
+## テーブル仕様書
+
+## 1. users テーブル
+| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
+|-----|----------|----|--------|----------|----------|----------|
+| 1 | id | unsigned bigint | ○ |  | ○ |  |
+| 2 | name | string |  |  | ○ |  |
+| 3 | email | string |  | ○ | ○ |  |
+| 4 | password | string |  |  | ○ |  |
+| 5 | role | enum |  |  | ○ |  |
+| 6 | email_verified_at | timestamp |  |  |  |  |
+| 7 | remember_token | string |  |  |  |  |
+| 8 | created_at | timestamp |  |  |  |  |
+| 9 | updated_at | timestamp |  |  |  |  |
+
+## 2. attendances テーブル
+| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
+|-----|----------|----|--------|----------|----------|----------|
+| 1 | id | unsigned bigint | ○ |  | ○ |  |
+| 2 | user_id | unsigned bigint |  |  | ○ | users(id) |
+| 3 | work_date | date |  |  | ○ |  |
+| 4 | clock_in | datetime |  |  |  |  |
+| 5 | clock_out | datetime |  |  |  |  |
+| 6 | reason | text |  |  |  |  |
+| 7 | status | enum |  |  | ○ |  |
+| 8 | created_at | timestamp |  |  |  |  |
+| 9 | updated_at | timestamp |  |  |  |  |
+
+## 3. break_times テーブル
+| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
+|-----|----------|----|--------|----------|----------|----------|
+| 1 | id | unsigned bigint | ○ |  | ○ |  |
+| 2 | attendance_id | unsigned bigint |  |  | ○ | attendances(id) |
+| 3 | break_start | datetime |  |  |  |  |
+| 4 | break_end | datetime |  |  |  |  |
+| 5 | created_at | timestamp |  |  |  |  |
+| 6 | updated_at | timestamp |  |  |  |  |
+
+## 4. applications テーブル
+| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
+|-----|----------|----|--------|----------|----------|----------|
+| 1 | id | unsigned bigint | ○ |  | ○ |  |
+| 2 | user_id | unsigned bigint |  |  | ○ | users(id) |
+| 3 | attendance_id | unsigned bigint |  |  | ○ | attendances(id) |
+| 4 | corrected_clock_in | datetime |  |  |  |  |
+| 5 | corrected_clock_out | datetime |  |  |  |  |
+| 6 | reason | text |  |  | ○ |  |
+| 7 | status | enum |  |  | ○ |  |
+| 8 | created_at | timestamp |  |  |  |  |
+| 9 | updated_at | timestamp |  |  |  |  |
+
+## 5. application_breaks テーブル
+| No. | カラム名 | 型 | 主キー | ユニーク | NOT NULL | 外部キー |
+|-----|----------|----|--------|----------|----------|----------|
+| 1 | id | unsigned bigint | ○ |  | ○ |  |
+| 2 | application_id | unsigned bigint |  |  | ○ | applications(id) |
+| 3 | break_start | datetime |  |  |  |  |
+| 4 | break_end | datetime |  |  |  |  |
+| 5 | created_at | timestamp |  |  |  |  |
+| 6 | updated_at | timestamp |  |  |  |  |
 
 ## Tree
 ```text
