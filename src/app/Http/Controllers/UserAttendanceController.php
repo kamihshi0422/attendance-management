@@ -158,31 +158,24 @@ class UserAttendanceController extends Controller
 
     public function showAttendanceDetail(
         Request $request,
-        $id = null,
+        $id,
         AttendanceDetailViewService $detailViewService
     ) {
-        $attendance = null;
-        $application = null;
+        if ($id == 0) {
+            $workDate = Carbon::parse($request->date);
 
-        if ($id) {
-            $attendance = Attendance::with(
-                'breakTimes',
-                'user',
-                'application.applicationBreaks'
-            )->findOrFail($id);
-
-            $application = $attendance->application;
-            $workDate = Carbon::parse($attendance->work_date);
-
-        } else {
-            $application = Application::with('attendance')
+            $attendance = Attendance::with(['breakTimes', 'user', 'application.applicationBreaks'])
                 ->where('user_id', auth()->id())
-                ->where('status', '承認待ち')
-                ->firstOrFail();
+                ->whereDate('work_date', $workDate)
+                ->first();
+        } else {
+            $attendance = Attendance::with(['breakTimes', 'user', 'application.applicationBreaks'])
+                ->findOrFail($id);
 
-            $attendance = $application->attendance;
             $workDate = Carbon::parse($attendance->work_date);
         }
+
+        $application = $attendance?->application;
 
         $attendanceDetailData = $detailViewService->build(
             $attendance,
@@ -191,13 +184,9 @@ class UserAttendanceController extends Controller
             'user'
         );
 
-        if ($attendance) {
-            $formAction = route('attendance.submitCorrection', $attendance->id);
-        } else {
-            $formAction = route('attendance.createForDate');
-        }
-
-        $attendanceDetailData['formAction'] = $formAction;
+        $attendanceDetailData['formAction'] = $attendance
+            ? route('attendance.submitCorrection', $attendance->id)
+            : route('attendance.createForDate');
 
         return view('attendance_detail', $attendanceDetailData);
     }
