@@ -25,7 +25,7 @@ class AdminStaffController extends Controller
     ) {
             Carbon::setLocale('ja');
 
-            $staffList = User::findOrFail($id);
+            $staff= User::findOrFail($id);
 
             $currentMonth = $request->year && $request->month
                 ? Carbon::create($request->year, $request->month)
@@ -34,10 +34,10 @@ class AdminStaffController extends Controller
             $previousMonth = $currentMonth->copy()->subMonth();
             $nextMonth     = $currentMonth->copy()->addMonth();
 
-            $days = $monthlyService->build($staffList, $currentMonth, $timeService);
+            $days = $monthlyService->build($staff, $currentMonth, $timeService);
 
             return view('staff_attendance', compact(
-                'staffList', 'days', 'currentMonth', 'previousMonth', 'nextMonth'
+                'staff', 'days', 'currentMonth', 'previousMonth', 'nextMonth'
             ));
     }
 

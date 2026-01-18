@@ -16,7 +16,7 @@ class AttendanceMonthlyService
         $attendances = Attendance::where('user_id', $user->id)
             ->whereYear('work_date', $month->year)
             ->whereMonth('work_date', $month->month)
-            ->with('breakTimes')
+            ->with(['breakTimes', 'application'])
             ->get()
             ->keyBy(fn ($attendance) => $attendance->work_date->toDateString());
 
@@ -28,21 +28,26 @@ class AttendanceMonthlyService
 
             $attendance = $attendances->get($dateKey);
 
+            $recordId = null;
             $clockIn  = '';
             $clockOut = '';
             $breakTime    = '';
             $total    = '';
-            $recordId = null;
 
             if ($attendance) {
-                $recordId = $attendance->id;
+                if (
+                    $attendance->application &&
+                    $attendance->application->status === '承認待ち'
+                ) {
+                } else {
+                    $recordId = $attendance->id;
+                    $clockIn  = $attendance->clock_in?->format('H:i') ?? '';
+                    $clockOut = $attendance->clock_out?->format('H:i') ?? '';
 
-                $clockIn  = $attendance->clock_in?->format('H:i') ?? '';
-                $clockOut = $attendance->clock_out?->format('H:i') ?? '';
-
-                $times = $timeService->calculate($attendance);
-                $breakTime = $times['break_time'];
-                $total = $times['work_time'];
+                    $times = $timeService->calculate($attendance);
+                    $breakTime = $times['break_time'];
+                    $total     = $times['work_time'];
+                }
             }
 
             $days[] = [

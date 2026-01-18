@@ -9,6 +9,7 @@ use App\Services\AttendanceTimeService;
 use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\BreakTime;
+use App\Models\Application;
 
 class UserAttendanceController extends Controller
 {
@@ -160,24 +161,43 @@ class UserAttendanceController extends Controller
         $id = null,
         AttendanceDetailViewService $detailViewService
     ) {
-        $attendance = $id
-            ? Attendance::with(
+        $attendance = null;
+        $application = null;
+        $workDate = Carbon::parse($request->date);
+
+        if ($id) {
+            $attendance = Attendance::with(
                 'breakTimes',
                 'user',
                 'application.applicationBreaks'
-            )->find($id)
-            : null;
+            )->find($id);
+
+            $application = $attendance?->application;
+        } else {
+            $application = Application::where('user_id', auth()->id())
+                ->where('status', '承認待ち')
+                ->whereHas('attendance', function ($query) use ($workDate) {
+                    $query->whereDate('work_date', $workDate);
+                })
+                ->first();
+        }
 
         $attendanceDetailData = $detailViewService->build(
             $attendance,
-            $attendance?->application,
+            $application,
             Carbon::parse($request->date),
             'user'
         );
 
-        $attendanceDetailData['formAction'] = $attendance
-            ? route('attendance.submitCorrection', $attendance->id)
-            : route('attendance.createForDate');
+        if ($attendance) {
+            $formAction = route('attendance.submitCorrection', $attendance->id);
+        } elseif ($application) {
+            $formAction = route('attendance.submitCorrection', $application->id);
+        } else {
+            $formAction = route('attendance.createForDate');
+        }
+
+        $attendanceDetailData['formAction'] = $formAction;
 
         return view('attendance_detail', $attendanceDetailData);
     }

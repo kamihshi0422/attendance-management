@@ -27,6 +27,9 @@ class AdminAttendanceController extends Controller
 
         $attendances = Attendance::with('user', 'breakTimes')
             ->where('work_date', $currentDate->toDateString())
+            ->whereDoesntHave('application', function ($query) {
+                $query->where('status', '承認待ち');
+            })
             ->get();
 
         $dailyAttendanceList = [];

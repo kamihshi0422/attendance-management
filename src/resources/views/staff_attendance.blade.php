@@ -8,12 +8,12 @@
 <section class="wrapper">
 
     <header class="ttl-box">
-        <h1 class="ttl">{{ $staffList->name }}さんの勤怠</h1>
+        <h1 class="ttl">{{ $staff->name }}さんの勤怠</h1>
     </header>
 
     <nav class="nav-wrapper">
         <a class="sub-month" href="{{ route('staffAttendance.show', [
-            'id' => $staffList->id,
+            'id' => $staff->id,
             'year' => $previousMonth->year,
             'month' => $previousMonth->month
         ]) }}">
@@ -23,7 +23,7 @@
         <div class="current-date">{{ $currentMonth->format('Y/m') }}</div>
 
         <a class="add-month" href="{{ route('staffAttendance.show', [
-            'id' => $staffList->id,
+            'id' => $staff->id,
             'year' => $nextMonth->year,
             'month' => $nextMonth->month
         ]) }}">
@@ -53,7 +53,7 @@
                         <a href="{{ route('admin.attendanceDetail.show', [
                             'id'      => $day['record_id'] ?? 0,
                             'date'    => $day['raw_date'],
-                            'user_id' => $staffList->id
+                            'user_id' => $staff->id
                         ]) }}">
                         詳細
                         </a>
@@ -65,7 +65,7 @@
 
     <nav class="csv-wrapper">
         <a class="csv" href="{{ route('staffAttendance.csv', [
-            'id' => $staffList->id,
+            'id' => $staff->id,
             'year' => $currentMonth->year,
             'month' => $currentMonth->month
         ]) }}">
